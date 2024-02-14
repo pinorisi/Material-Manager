@@ -1,0 +1,372 @@
+/*---- Allgemein ----*/
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Lexend';
+}
+
+body{
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+}
+
+.feather{
+    height: 18px;
+    width: 18px;
+}
+
+
+
+/*---- Text ----*/
+
+.subtitle, .subname{
+    font-size: 14px;
+    color: #393B3D;
+}
+
+
+
+/*---- Header ----*/
+
+header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 40px;
+    padding: 0 40px;
+    margin: 20px 0 0 0;
+}
+
+#logo{
+    height: 40px;
+}
+
+#user-header{
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: right;
+    gap: 16px;
+}
+
+#user-header img{
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#user-menu{
+    display: none;
+    border: 1px solid #232527;
+    border-radius: 4px;
+    width: 125px;
+    padding: 8px 4px;
+    position: absolute;
+    right: 40px;
+    margin-top: 16px;
+    background-color: white;
+}
+
+#user-menu.open{
+    display: block;
+}
+
+#user-menu ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.menu-link{
+    cursor: pointer;
+}
+
+.menu-link:hover{
+    color: #3B3D40;
+}
+
+
+
+/*---- Footer ----*/
+
+footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 35px;
+    position: absolute;
+    bottom: 20px;
+    padding: 0 40px;
+}
+
+footer .feather{
+    color: white;
+    width: 18px;
+    height: 18px;
+}
+
+.footer-button, .footer-button_long{
+    height: 35px;
+    background-color: #6D8788;
+    border: none;
+    border-radius: 4px;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.footer-button.dark, .footer-button_long.dark{
+    background-color: #232527;
+}
+.footer-button.dark:hover, .footer-button_long.dark:hover{
+    background-color: #3B3D40;
+}
+
+.footer-button.light, .footer-button_long.light{
+    background-color: #CCCCCC;
+    color: #232527;
+    .feather{
+        color: #232527;
+    }
+}
+.footer-button.light:hover, .footer-button_long.light:hover{
+    background-color: #DCDCDC;
+}
+
+.footer-button_long{
+    padding: 0 8px 0 8px; 
+    gap: 8px;
+}
+
+.footer-button{
+    width: 35px;
+}
+
+.footer-button:hover, .footer-button_long:hover{
+    background-color: #556364;
+}
+
+
+
+/*---- Main ----*/
+
+main{
+    width: 100%;
+    height: 75%;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding: 0 40px 0 40px;
+}
+
+h1{
+    font-size: 24px;
+    text-transform: uppercase;
+}
+
+.space-between{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.subtitle{
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-container{
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    border-radius: 4px;
+    border: none;
+    padding: 2px 8px 2px 8px;
+    color: #232527;
+}
+
+.status-container.show{
+    display: flex;
+}
+
+#mat-nr{
+    font-size: 14px;
+    color: #CCCCCC;
+}
+
+.infoHolder{
+    width: 100%;
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.disp-text{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.disp-text .text-container{
+    width: 100%;
+    height: 30px;
+    display: flex;
+    padding: 0 4px 0 4px;
+    background-color: #CCCCCC;
+    align-items: center;
+    border-radius: 2px;
+    border: none;
+    font-size: 16px;
+}
+
+.text-container.center{
+    justify-content: center;
+}
+
+.subname .feather{
+    height: 12px;
+    width: 12px;
+    margin-left: 8px;
+}
+
+.text-bem{
+    width: 100%;
+    height: 120px;
+    background-color: #CCCCCC;
+    border-radius: 2px;
+    border: none;
+    padding: 4px;
+}
+
+input[type='checkbox']{
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 4px;
+    background-color: #CCCCCC;
+    accent-color: #6D8788;
+}
+
+.grid-2{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.grid-12{
+    display: grid;
+    grid-template-columns: 1fr 0.5fr 0.5fr;
+    gap: 16px;
+}
+
+.modal{
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    height: 100%;
+    background-color: rgba(35, 37, 39, 0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.modal.open{
+    display: flex;
+}
+
+.modal-content{
+    width: 100%;
+    min-height: 125px;
+    background-color: white;
+    border-radius: 4px;
+    border: 1px solid #232527;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content .feather{
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+}
+
+.modal-img{
+    width: 100%;
+    border-radius: 2px;
+    margin-top: 16px;
+}
+
+.search-container{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 30px;
+    justify-content: space-between;
+    border: none;
+    background-color: #CCCCCC;
+    margin-top: 8px;
+    border-radius: 4px;
+}
+
+.search-container input{
+    width: 100%;
+    border: none;
+    background-color: #CCCCCC;
+    padding: 0 4px 0 4px;
+}
+
+.search-container button{
+    border: none;
+    background-color: #CCCCCC;
+    margin-right: 8px;
+}
+
+.bestand-list{
+    list-style: none;
+    margin-top: 16px;
+    border: none;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    height: 300px;
+    scrollbar-width: 2px;
+    scroll-margin-left: 4px;
+}
+
+.bestand-list li{
+    width: 100%;
+    height: 26px;
+    padding: 0 4px 0 4px;
+    cursor: pointer;
+
+    &:nth-child(even){
+        background-color: #CCCCCC;
+    }
+}
+
+.bestand-list div p{
+    width: 28px;
+    justify-content: left;
+}
