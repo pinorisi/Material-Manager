@@ -1,22 +1,19 @@
 <?php
-$bezeichnung = $_GET['bezeichnung'] ?? '';
+session_start();
 
-// Connect to the database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "materialmanager";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("location: ../login/login.php");
+    exit;
 }
 
+$id = $_GET['id'] ?? '';
+
+require_once '../../assets/php/config.php';
+
 // Query the database for the information corresponding to the given bezeichnung
-$sql = "SELECT * FROM material WHERE bezeichnung = ?";
+$sql = "SELECT * FROM material WHERE id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $bezeichnung);
+$stmt->bind_param("s", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -26,12 +23,12 @@ if ($result->num_rows > 0) {
 
     // Fill in the information on the page using the $material array
     // For example:
-    $bezeichnung = $material['bezeichnung'];
+    $id = $material['id'];
     $anzahl = $material['anzahl'];
     // ... and so on
 } else {
     // Handle the case where no row was returned
-    echo "No material found with the given bezeichnung.";
+    echo "No material found with the given Id.";
 }
 
 // Close the database connection
@@ -72,7 +69,7 @@ $conn->close();
     <main>
         <div class="space-between">
             <h1><?php echo $material['bezeichnung']; ?></h1>
-            <a onclick="toEditPage('<?php echo $bezeichnung ?>')"><span style="color: #232527;" data-feather="edit-2"></span></a> <!--Bearbeiten-->
+            <a onclick="toEditPage('<?php echo $id ?>')"><span style="color: #232527;" data-feather="edit-2"></span></a> <!--Bearbeiten-->
         </div>
         <div class="space-between">
             <p class="subtitle"><?php echo $material['kategorie']; ?></p>
@@ -182,8 +179,8 @@ function siteBack(){
     window.history.back();
 }
 
-function toEditPage(bezeichnung){
-    window.location.href = 'bearbeiten.php?bezeichnung=' + encodeURIComponent(bezeichnung);
+function toEditPage(id){
+    window.location.href = 'bearbeiten.php?id=' + encodeURIComponent(id);
 }
 
 

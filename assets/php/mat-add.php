@@ -20,7 +20,8 @@ if (isset($_POST['bezeichnung_input']) && isset($_POST['anzahl_input']) && isset
             VALUES ('$bezeichnung', '$anzahl', '$lagerort', '$kategorie', '$anschaffung', '$einkauf', '$einkaufText', '$verpackung', '$bemerkung', '$status')";
 
     if ($conn->query($sql) === TRUE) {
-        header("Location: ../../pages/bestand/ansicht-material.php?bezeichnung=" . urlencode($bezeichnung));
+        $id = $conn->insert_id; // Abrufen der "id" des neu eingefügten Datensatzes
+        header("Location: ../../pages/bestand/ansicht-material.php?id=" . urlencode($id));
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }

@@ -1,40 +1,91 @@
 <?php
-$bezeichnung = $_GET['bezeichnung'] ?? '';
+session_start();
 
-// Connect to the database
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "materialmanager";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("location: ../login/login.php");
+    exit;
 }
 
-// Query the database for the information corresponding to the given bezeichnung
-$sql = "SELECT * FROM material WHERE bezeichnung = ?";
+$id = $_GET['id'] ?? '';
+
+require_once '../../assets/php/config.php';
+
+$sql = "SELECT * FROM material WHERE id = ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $bezeichnung);
+$stmt->bind_param("s", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if a row was returned
 if ($result->num_rows > 0) {
     $material = $result->fetch_assoc();
 
-    // Fill in the information on the page using the $material array
-    // For example:
     $bezeichnung = $material['bezeichnung'];
     $anzahl = $material['anzahl'];
-    // ... and so on
+
 } else {
-    // Handle the case where no row was returned
     echo "No material found with the given bezeichnung.";
 }
 
-// Close the database connection
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
+    $bezeichnung_input = $_POST['bezeichnung_input'] ?? '';
+    $anzahl_input = $_POST['anzahl_input'] ?? '';
+    $lagerort_input = $_POST['lagerort_input'] ?? '';
+    $kategorie_input = $_POST['kategorie_input'] ?? '';
+    $anschaffung_input = $_POST['anschaffung_input'] ?? '';
+    $einkaufText_input = $_POST['einkaufText_input'] ?? '';
+    $verpackung_input = $_POST['verpackung_input'] ?? '';
+    $bemerkung_input = $_POST['bemerkung_input'] ?? '';
+    $status_input = isset($_POST['status_input']) ? 1 : 0;
+
+    $id = $material['id'];
+
+
+    $updates = [];
+    if ($bezeichnung_input && $bezeichnung_input != $material['bezeichnung']) {
+        $updates[] = "bezeichnung='$bezeichnung_input'";
+    }
+    if ($anzahl_input && $anzahl_input != $material['anzahl']) {
+        $updates[] = "anzahl=$anzahl_input";
+    }
+    if ($lagerort_input && $lagerort_input != $material['lagerort']) {
+        $updates[] = "lagerort='$lagerort_input'";
+    }
+    if ($kategorie_input && $kategorie_input != $material['kategorie']) {
+        $updates[] = "kategorie='$kategorie_input'";
+    }
+    if ($anschaffung_input && $anschaffung_input != $material['anschaffung']) {
+        $updates[] = "anschaffung=$anschaffung_input";
+    }
+    if ($einkaufText_input && $einkaufText_input != $material['einkaufText']) {
+        $updates[] = "einkaufText='$einkaufText_input'";
+    }
+    if ($verpackung_input && $verpackung_input != $material['verpackung']) {
+        $updates[] = "verpackung='$verpackung_input'";
+    }
+    if ($bemerkung_input && $bemerkung_input != $material['bemerkung']) {
+        $updates[] = "bemerkung='$bemerkung_input'";
+    }
+    //checked = 1; unchecked = 0
+    if ($material['status'] == 0 && $status_input == 1) {
+        $updates[] = "status='$status_input'";
+    } elseif ($material["status"] == 1 && $status_input == 0) {
+        $updates[] = "status='$status_input'";
+    }
+
+
+    if (!empty($updates)) {
+        $sql = "UPDATE material SET " . implode(', ', $updates) . " WHERE id=$material[id]";
+        $conn->query($sql);
+        $id_code = urlencode($id);
+        header("Location: ansicht-material.php?id=$id_code");
+        exit();
+    } else {
+        $id_code = urlencode($id);
+        header("Location: ansicht-material.php?id=$id_code");
+        exit();
+    }
+}
+
 $conn->close();
 ?>
 
@@ -56,7 +107,6 @@ $conn->close();
 </head>
 <body>
     <header>
-        <!-- Logo und Benutzer -->
         <a href="#dashboard"><img id="logo" src="../../assets/icons/logo-small.png"></a>
         <div id="user-header">
             <p id="username">Benutzername</p>
@@ -72,14 +122,13 @@ $conn->close();
     </div>
 
     <main>
-        <!-- Inhalt der Seite -->
         <div class="space-between">
-            <h1><?php echo $material['bezeichnung']; ?></h1> <!--Bezeichnung-->
+            <h1><?php echo $material['bezeichnung']; ?></h1>
             <a onclick="openDel()"><span style="color: #232527;" data-feather="trash"></span></a>
         </div>
         <div class="space-between">
-            <p class="subtitle"><?php echo $material['kategorie']; ?></p> <!--Kategorie-->
-            <p class="subtitle"><span data-feather="map-pin"></span><?php echo $material['lagerort']; ?></p> <!--Lagerort-->
+            <p class="subtitle"><?php echo $material['kategorie']; ?></p>
+            <p class="subtitle"><span data-feather="map-pin"></span><?php echo $material['lagerort']; ?></p>
         </div>
         <div class="space-between" style="margin-top: 12px;">
             <div>
@@ -99,8 +148,7 @@ $conn->close();
             <p><?php echo $material['id']; ?></p>
         </div>
 
-        <form class="infoHolder" method="post" action="../../assets/php/mat-edit.php">
-        <input type="hidden" name="id" value="<?php echo $material['id']; ?>">
+        <form class="infoHolder" method="post">
             <div class="disp-text">
                 <input type="text" name="bezeichnung_input" class="text-container" value="<?php echo $material['bezeichnung']; ?>" autocomplete="off" required/>
                 <p class="subname">Bezeichnung</p>
@@ -153,7 +201,7 @@ $conn->close();
                 <p class="subname">Bemerkungen</p>
             </div>
             <div style="display: flex;flex-direction: row;">
-                <input type="checkbox" name="status_input" class="check" style="margin-right: 8px;" <?php if( $material['status'] == 1) echo 'checked'; ?>>
+                <input type="checkbox" name="status_input" value="defekt" class="check" style="margin-right: 8px;" <?php if( $material['status'] == 1) echo 'checked'; ?>>
                 <p>Als defekt markieren</p>
             </div>
     </main>
@@ -278,5 +326,6 @@ document.getElementById("takePhoto").addEventListener("click", async () => {
     a.click(); 
     closeModal(); 
 });
+
 </script>
 </html>

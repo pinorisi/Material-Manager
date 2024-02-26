@@ -1,3 +1,50 @@
+<?php
+session_start();
+
+require_once '../../assets/php/config.php';
+
+if (isset($_POST['submit'])) {
+  $username = $_POST['username'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $re_password = $_POST['re-password'];
+  $registerKey = $_POST['registerKey'];
+
+  $stmt = $conn->prepare("SELECT * FROM users WHERE registerKey = ?");
+  $stmt->bind_param("s", $registerKey);
+  $stmt->execute();
+  $result = $stmt->get_result();
+
+  if ($result->num_rows == 0) {
+      $error_message = "Ungültiger Registrierungsschlüssel.";
+  } else {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+    $stmt->bind_param("ss", $username, $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+      $error_message = "Nutzername oder E-Mail existieren bereits.";
+    } else {
+      $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+      $stmt = $conn->prepare("UPDATE users SET username = ?, email = ?, password = ? WHERE registerKey = ?");
+      $stmt->bind_param("ssss", $username, $email, $hashed_password, $registerKey);
+
+      if ($stmt->execute()) {
+        header("location: ../bestand/bestand.php");
+      } else {
+        $error_message = "Registrierung fehlgeschlagen.";
+      }
+    }
+
+    $stmt->close();
+  }
+}
+
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -15,16 +62,17 @@
 </head>
 <body>
     <header>
-        <!-- Logo -->
         <img id="logo" src="../../assets/icons/logo-long.png">
     </header>
 
     <main>
-        <!-- Formulare -->
         <div class="main-container">
-            <form>
+            <form method="post">
                 <div>
                     <h1 class="sitetitle">Registrieren</h1>
+                    <?php if (isset($error_message)): ?>
+                        <p class="errorMessage"><?php echo $error_message; ?></p>
+                    <?php endif; ?>
                     <input type="text" id="username" name="username" required autocomplete="on" autofocus>
                     <p>Benutzername</p>
                     <input type="email" id="email" name="email" required autocomplete="on">
@@ -42,8 +90,7 @@
     </main>
 
     <footer>
-        <!-- Links -->
-        <a href="../login/login.html"><span data-feather="arrow-left"></span>Anmelden</a>
+        <a href="../login/login.php"><span data-feather="arrow-left"></span>Anmelden</a>
     </footer>
 </body>
 
