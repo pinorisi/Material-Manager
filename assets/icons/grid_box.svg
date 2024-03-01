@@ -1,0 +1,65 @@
+<svg id="Gruppe_44" data-name="Gruppe 44" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="17" height="15.118" viewBox="0 0 17 15.118">
+  <defs>
+    <style>
+      .cls-1, .cls-3, .cls-4, .cls-5, .cls-6 {
+        fill: none;
+      }
+
+      .cls-2 {
+        clip-path: url(#clip-path);
+      }
+
+      .cls-3, .cls-4, .cls-5, .cls-6 {
+        stroke: #1a1c1d;
+      }
+
+      .cls-4 {
+        stroke-linejoin: round;
+      }
+
+      .cls-5, .cls-6 {
+        stroke-width: 0.5px;
+      }
+
+      .cls-6 {
+        stroke-linecap: square;
+      }
+    </style>
+    <clipPath id="clip-path">
+      <rect id="Rechteck_152" data-name="Rechteck 152" class="cls-1" width="17" height="15.118" transform="translate(0 0)"/>
+    </clipPath>
+  </defs>
+  <g id="Gruppe_43" data-name="Gruppe 43" class="cls-2">
+    <rect id="Rechteck_150" data-name="Rechteck 150" class="cls-3" width="16" height="14.118" rx="1" transform="translate(0.5 0.5)"/>
+    <rect id="Rechteck_151" data-name="Rechteck 151" class="cls-4" width="6" height="2" transform="translate(5.5 2.177)"/>
+    <line id="Linie_89" data-name="Linie 89" class="cls-5" x1="8" transform="translate(4.5 5.059)"/>
+    <line id="Linie_90" data-name="Linie 90" class="cls-5" x1="10.75" y1="10.75" transform="translate(2.25 3.559)"/>
+    <line id="Linie_91" data-name="Linie 91" class="cls-5" x1="9.5" y1="9.5" transform="translate(5.75 5.059)"/>
+    <line id="Linie_92" data-name="Linie 92" class="cls-5" x1="8.5" y1="8.5" transform="translate(7.75 5.059)"/>
+    <line id="Linie_93" data-name="Linie 93" class="cls-5" x1="6.5" y1="6.5" transform="translate(9.75 5.059)"/>
+    <line id="Linie_94" data-name="Linie 94" class="cls-5" x1="4.5" y1="4.5" transform="translate(11.75 5.059)"/>
+    <line id="Linie_95" data-name="Linie 95" class="cls-5" x1="4.25" y1="4.25" transform="translate(12.5 3.809)"/>
+    <line id="Linie_96" data-name="Linie 96" class="cls-5" x1="10.685" y1="10.685" transform="translate(0.565 3.874)"/>
+    <line id="Linie_97" data-name="Linie 97" class="cls-5" x2="6.5" y2="6.5" transform="translate(0.75 8.059)"/>
+    <line id="Linie_98" data-name="Linie 98" class="cls-5" x2="4.5" y2="4.5" transform="translate(0.75 10.059)"/>
+    <line id="Linie_99" data-name="Linie 99" class="cls-5" x2="3" y2="3" transform="translate(0.25 11.559)"/>
+    <line id="Linie_100" data-name="Linie 100" class="cls-5" x2="8.5" y2="8.5" transform="translate(0.75 6.059)"/>
+    <line id="Linie_101" data-name="Linie 101" class="cls-5" y1="11" x2="11" transform="translate(3.75 3.559)"/>
+    <line id="Linie_102" data-name="Linie 102" class="cls-5" y1="9.5" x2="9.5" transform="translate(1.75 5.059)"/>
+    <line id="Linie_103" data-name="Linie 103" class="cls-5" y1="8.732" x2="8.732" transform="translate(0.518 5.059)"/>
+    <line id="Linie_104" data-name="Linie 104" class="cls-5" y1="6.685" x2="6.685" transform="translate(0.565 5.059)"/>
+    <line id="Linie_105" data-name="Linie 105" class="cls-5" y1="4.667" x2="4.667" transform="translate(0.583 5.059)"/>
+    <line id="Linie_106" data-name="Linie 106" class="cls-5" y1="3.935" x2="3.935" transform="translate(0.5 3.874)"/>
+    <line id="Linie_107" data-name="Linie 107" class="cls-5" y1="10.685" x2="10.685" transform="translate(5.75 3.874)"/>
+    <line id="Linie_108" data-name="Linie 108" class="cls-5" x1="6.5" y2="6.5" transform="translate(9.75 8.059)"/>
+    <line id="Linie_109" data-name="Linie 109" class="cls-5" x1="4.5" y2="4.5" transform="translate(11.75 10.059)"/>
+    <line id="Linie_110" data-name="Linie 110" class="cls-5" x1="3" y2="3" transform="translate(13.75 11.559)"/>
+    <line id="Linie_111" data-name="Linie 111" class="cls-5" x1="8.5" y2="8.5" transform="translate(7.75 6.059)"/>
+    <line id="Linie_112" data-name="Linie 112" class="cls-6" y2="1.5" transform="translate(4.5 3.559)"/>
+    <line id="Linie_113" data-name="Linie 113" class="cls-6" y2="1.5" transform="translate(12.5 3.559)"/>
+    <line id="Linie_114" data-name="Linie 114" class="cls-6" x2="4" transform="translate(12.5 3.559)"/>
+    <line id="Linie_115" data-name="Linie 115" class="cls-6" x2="4" transform="translate(0.5 3.559)"/>
+    <line id="Linie_116" data-name="Linie 116" class="cls-5" x1="2.25" y1="2.25" transform="translate(14.25 3.559)"/>
+    <line id="Linie_117" data-name="Linie 117" class="cls-5" y1="2.25" x2="2.25" transform="translate(0.5 3.559)"/>
+  </g>
+</svg>

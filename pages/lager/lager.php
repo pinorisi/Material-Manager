@@ -44,18 +44,18 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </div>
 
     <main>
-        <h1>Bestand</h1>
+        <h1>Lager</h1>
         <form class="search-container">
-            <input type="search" id="search-bar" placeholder="Suchen..." onkeyup="searchBestand()">
+            <input type="search" id="search-bar" placeholder="Suchen..." onkeyup="searchLager()">
             <button type="button"><span data-feather="search"></span></button>
         </form>
-        <p class="subname" style="margin-top: 2px;" id="resultCount">0 Ergebnisse gefunden</p>
+        <p class="subname" style="margin-top: 2px;" id="resultCount">0 Kisten gefunden</p>
     
         <ul class="bestand-list">
         <?php
             require_once('../../assets/php/config.php');
         
-            $sql = "SELECT bezeichnung, id, anzahl, status FROM material";
+            $sql = "SELECT bezeichnung, id, icon, status FROM lager";
             $result = $conn->query($sql);
         
             if ($result->num_rows > 0) {
@@ -73,10 +73,26 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         default:
                             $statusIcon = "";
                     }
-                    echo '<li class="space-between blli" onclick="toMaterialPage(\'' . $row["id"] . '\')">
+                    switch ($row["icon"]) {
+                        case "1":
+                            $chestIcon = "../../assets/icons/half_box.svg";
+                            break;
+                        case "2":
+                            $chestIcon = "../../assets/icons/full_box.svg";
+                            break;
+                        case "3":
+                            $chestIcon = "../../assets/icons/grid_box.svg";
+                            break;
+                        case "4":
+                            $chestIcon = "../../assets/icons/half_grid_box.svg";
+                            break;
+                        default:
+                            $chestIcon = "../../assets/icons/half_box.svg";
+                    }
+                    echo '<li class="space-between blli" onclick="toLagerPage(\'' . $row["id"] . '\')">
                             <p>' . $row["bezeichnung"] . '</p>
                             <div style="display: flex;flex-direction: row;gap: 8px;align-items: center;">
-                                <span style="width: 14px; height: 14px;" ' . $statusIcon . '></span><div class="vertical-line"></div><p style="text-align: center;">' . $row["anzahl"] . '</p>
+                                <span style="width: 14px; height: 14px;" ' . $statusIcon . '></span><div class="vertical-line"></div><img src="' . $chestIcon . '" style="height: 16px; aspect-ratio: 1/1;">
                             </div>
                         </li>';
                 }
@@ -91,10 +107,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">
         <a href="../allgemein/dashboard.php" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
-        <div style="display:flex;flex-direction:row;gap:16px;">
-        <a href="erstellen.php" class="footer-button" title="Hinzufügen"><span style="color: white;" data-feather="plus"></span></a>
-        <a onclick="pageRefresh()" class="footer-button light" title="Aktualisieren"><span style="color: #232527;" data-feather="refresh-ccw"></span></a>
-        </div>
+        <button id="scanBtn" class="footer-button_long"><span data-feather="camera"></span>Scannen</button>
     </footer>
 </body>
 
@@ -130,11 +143,11 @@ function pageRefresh(){
     location.reload();
 }
 
-function toMaterialPage(id){
-    window.location.href = 'ansicht-material.php?id=' + encodeURIComponent(id);
+function toLagerPage(id){
+    window.location.href = 'ansicht-kiste.php?id=' + encodeURIComponent(id);
 }
 
-function searchBestand() {
+function searchLager() {
     var input, filter, ul, li, txtValue, searchResults;
     input = document.getElementById('search-bar');
     filter = input.value.toUpperCase().replace(/\s+/g, '');

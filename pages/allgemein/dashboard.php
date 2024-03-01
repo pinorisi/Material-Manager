@@ -76,7 +76,7 @@ $conn->close();
     </header>
     <div id="user-menu">
         <ul>
-            <li><a class="menu-link">Profil</a></li>
+            <li><a href="profil.php" class="menu-link">Profil</a></li>
             <li><a class="menu-link">Einstellungen</a></li>
             <li>
                 <form method="post" action="../../assets/php/users/logout.php">
@@ -90,7 +90,7 @@ $conn->close();
         <h1>Dashboard</h1>
         <div class="infoHolder" style="gap:2px;">
             <p>Willkomen zurück <b><?php echo $users['first_name'] ?></b>,</p>
-            <p class="subname">Letzter Login war <span style="color: #6D8788;"><?php echo $users['last-login'] ?></span>.</p>
+            <p class="subname">Letzter Login war <span style="color: #6D8788;"><?php echo $users['last_login'] ?></span>.</p>
             
             <div class="grid-2" style="margin-top:40px;">
                 <div class="count-container" style="border-left:8px solid #B51A1A;">
@@ -114,7 +114,7 @@ $conn->close();
             <div class="infoHolder">
                 <div class="grid-2">
                     <a href="../bestand/bestand.php" class="footer-button_long">Bestand</a>
-                    <a href="../lager/kisten.php" class="footer-button_long">Lager</a>
+                    <a href="../lager/lager.php" class="footer-button_long">Lager</a>
                 </div>
                 <a href="#" class="footer-button_long" style="width:100%;">Ausgeben</a>
                 <a href="#" class="footer-button_long" style="width:100%;">Verleihen</a>
@@ -164,55 +164,5 @@ function closeModal(modal){
     x.classList.remove('open');  
     stopScanning(); // Deaktiviere die Kamera
 }
-
-let scanBtn =document.getElementById('scanBtn');
-let qrVideo = document.getElementById('qrVideo');
-let qrContent =document.getElementById('qrContent');
-
-function startScanning(){
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-        navigator.mediaDevices.getUserMedia({video: {facingMode: 'environment'} })
-        .then(function(stream){
-            qrVideo.srcObject = stream;
-            qrVideo.setAttribute('playsinline', true);
-            qrVideo.play();
-            scanQRCode();
-        })
-        .catch(function(error){
-            console.log("Fehler bei zugriff auf Kamera: ", error);
-        });
-    }else{
-        console.log('Die getUserMedia API wird in diesem Browser/auf diesem Gerät nicht unterstützt.');
-    }
-}
-
-function stopScanning(){
-    qrVideo.srcObject = null;
-    qrVideo.load();
-}
-
-function scanQRCode(){
-    qrVideo.pause();
-    let canvas = document.createElement('canvas');
-    canvas.width = qrVideo.videoWidth;
-    canvas.height =qrVideo.videoHeigth;
-    canvas.getContext('2d').drawImage(qrVideo, 0, 0, canvas.width, canvas.height);
-    let imageData = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.heigth);
-    let code = jsQR(imageData.data, imageData.width, imageData.heigth);
-    if(code){
-        console.log('QR-Code entschlüsselt: ', code.data);
-        qrContent.innerText = code.data;
-        qrContent.hidden = false;
-        stopScanning(); // Deaktiviere die Kamera
-    }else{
-        setTimeout(scanQRCode, 100);
-    }
-    qrVideo.play();
-}
-
-scanBtn.addEventListener('click', function() {
-    document.getElementById('modal').classList.add('open');
-    startScanning(); // Aktiviere die Kamera
-});
 </script>
 </html>

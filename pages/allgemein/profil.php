@@ -5,11 +5,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("location: ../login/login.php");
     exit;
 }
-
 require_once '../../assets/php/config.php';
 
 $id = $_SESSION['id'];
-
+$username = $_POST['username_input'];
+$email = $_POST['email_input'];
+$old_password = $_POST['old_password_input'];
+$new_password = $_POST['new_password_input'];
+$re_new_password = $_POST['re_new_password_input'];
 $sql = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $id);
@@ -18,10 +21,28 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $users = $result->fetch_assoc();
+    // Überprüfen, ob das alte Passwort mit dem in der Datenbank gespeicherten übereinstimmt
+    if (password_verify($old_password, $users['password'])) {
+        // Passwort aktualisieren, wenn das neue Passwort mit der Wiederholung übereinstimmt
+        if ($new_password === $re_new_password) {
+            $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            $sql = "UPDATE users SET username = ?, email = ?, password = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $username, $email, $new_hashed_password, $id);
+            $stmt->execute();
+
+            // Weiterleitung zur Bestätigungsseite
+            header("location: profile_saved.php");
+            exit;
+        } else {
+            echo "Die neuen Passwörter stimmen nicht überein.";
+        }
+    } else {
+        echo "Das aktuelle Passwort ist falsch.";
+    }
 } else {
     echo "Kein Benutzer mit der Id gefunden.";
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +62,6 @@ if ($result->num_rows > 0) {
 </head>
 <body>
     <header>
-        <!-- Logo und Benutzer -->
         <a href="#dashboard"><img id="logo" src="../../assets/icons/logo-small.png"></a>
         <div id="user-header" title="Account">
             <p id="username"><?php echo $_SESSION['username'] ?></p>

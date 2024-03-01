@@ -7,7 +7,7 @@ if (isset($_POST['submit'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT id, username, password FROM users WHERE username = ?";
+    $sql = "SELECT id, username, password, last_login FROM users WHERE username = ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
@@ -19,11 +19,19 @@ if (isset($_POST['submit'])) {
             $id = $row['id'];
             $db_username = $row['username'];
             $db_password = $row['password'];
+            $last_login = $row['last_login'];
 
             if (password_verify($password, $db_password)) {
                 $_SESSION['loggedin'] = true;
                 $_SESSION['id'] = $id;
                 $_SESSION['username'] = $username;
+
+                $current_time = date("Y-m-d H:i:s");
+                $sql_update = "UPDATE users SET last_login = ? WHERE id = ?";
+                $stmt_update = $conn->prepare($sql_update);
+                $stmt_update->bind_param("ss", $current_time, $id);
+                $stmt_update->execute();
+                $stmt_update->close();
 
                 header("location: ../allgemein/dashboard.php");
             } else {

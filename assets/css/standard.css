@@ -16,6 +16,7 @@ body{
     height: 100vh;
     margin: 0;
     font-size: 16px;
+    overflow: hidden;
 }
 
 .feather{
@@ -68,19 +69,19 @@ header{
 }
 
 #user-menu{
-    display: none;
     border: 1px solid #232527;
     border-radius: 4px;
     width: 125px;
     padding: 8px 4px;
     position: absolute;
-    right: 40px;
+    right: -150px;
     margin-top: 16px;
     background-color: white;
+    transition: right 0.15s ease-out;
 }
 
 #user-menu.open{
-    display: block;
+    right: 40px;
 }
 
 #user-menu ul{
@@ -96,7 +97,7 @@ header{
     border-radius: 2px;
     background-color: #232527;
     color: white;
-    height: 20px;
+    height: 32px;
     cursor: pointer;
 }
 
@@ -386,8 +387,18 @@ input[type='checkbox']{
     padding: 0 4px 0 4px;
     cursor: pointer;
 
+    .vertical-line{
+        border-left: 2px solid #CCCCCC;
+        height: 26px;
+        margin: 0 4px;
+    }
+
     &:nth-child(even){
         background-color: #CCCCCC;
+
+        .vertical-line{
+            border-left-color: #232527;
+        }
     }
 }
 
@@ -422,4 +433,13 @@ input[type='checkbox']{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.delMatBtn{
+    height: 20px;
+    width: 20px;
+    background-color: #B2000D;
+    color: white;
+    border-radius: 4px;
+    text-align: center;
 }

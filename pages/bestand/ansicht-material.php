@@ -4,6 +4,9 @@ session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("location: ../login/login.php");
     exit;
+} elseif (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
+    header("location: ../login/logout.html");
+    exit;
 }
 
 $id = $_GET['id'] ?? '';
@@ -148,7 +151,7 @@ $conn->close();
     </div>
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">
-        <a href="bestand.php" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
+        <a onclick="siteBack()" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
         <a onclick="openModal()" class="footer-button_long light"><span data-feather="image"></span>Bild</a>
     </footer>
 </body>

@@ -1,0 +1,61 @@
+<svg id="Gruppe_46" data-name="Gruppe 46" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="17" height="10.118" viewBox="0 0 17 10.118">
+  <defs>
+    <style>
+      .cls-1, .cls-3, .cls-4, .cls-5, .cls-6 {
+        fill: none;
+      }
+
+      .cls-2 {
+        clip-path: url(#clip-path);
+      }
+
+      .cls-3, .cls-4, .cls-5, .cls-6 {
+        stroke: #1a1c1d;
+      }
+
+      .cls-4 {
+        stroke-linejoin: round;
+      }
+
+      .cls-5, .cls-6 {
+        stroke-width: 0.5px;
+      }
+
+      .cls-6 {
+        stroke-linecap: square;
+      }
+    </style>
+    <clipPath id="clip-path">
+      <rect id="Rechteck_154" data-name="Rechteck 154" class="cls-1" width="17" height="10.118" transform="translate(0 0)"/>
+    </clipPath>
+  </defs>
+  <g id="Gruppe_45" data-name="Gruppe 45" class="cls-2">
+    <path id="Pfad_64" data-name="Pfad 64" class="cls-3" d="M1.5.5h14c.552,0,1,.289,1,.646V8.972c0,.357-.448.646-1,.646H1.5c-.552,0-1-.289-1-.646V1.146C.5.789.948.5,1.5.5Z"/>
+    <rect id="Rechteck_153" data-name="Rechteck 153" class="cls-4" width="6" height="2" transform="translate(5.5 2.177)"/>
+    <line id="Linie_118" data-name="Linie 118" class="cls-5" x1="8" transform="translate(4.5 5.059)"/>
+    <line id="Linie_119" data-name="Linie 119" class="cls-5" x1="6" y1="6" transform="translate(2.25 3.559)"/>
+    <line id="Linie_120" data-name="Linie 120" class="cls-5" x1="4.559" y1="4.559" transform="translate(5.75 5.059)"/>
+    <line id="Linie_121" data-name="Linie 121" class="cls-5" x1="4.559" y1="4.559" transform="translate(7.75 5.059)"/>
+    <line id="Linie_122" data-name="Linie 122" class="cls-5" x1="4.559" y1="4.559" transform="translate(9.75 5.059)"/>
+    <line id="Linie_123" data-name="Linie 123" class="cls-5" x1="4.5" y1="4.5" transform="translate(11.75 5.059)"/>
+    <line id="Linie_124" data-name="Linie 124" class="cls-5" x1="4.25" y1="4.25" transform="translate(12.5 3.809)"/>
+    <line id="Linie_125" data-name="Linie 125" class="cls-5" x1="5.744" y1="5.744" transform="translate(0.565 3.874)"/>
+    <line id="Linie_126" data-name="Linie 126" class="cls-5" x2="1.559" y2="1.559" transform="translate(0.75 8.059)"/>
+    <line id="Linie_127" data-name="Linie 127" class="cls-5" x2="3.559" y2="3.559" transform="translate(0.75 6.059)"/>
+    <line id="Linie_128" data-name="Linie 128" class="cls-5" y1="6.059" x2="6.059" transform="translate(8.691 3.559)"/>
+    <line id="Linie_129" data-name="Linie 129" class="cls-5" y1="4.559" x2="4.559" transform="translate(6.691 5.059)"/>
+    <line id="Linie_130" data-name="Linie 130" class="cls-5" y1="4.559" x2="4.559" transform="translate(4.691 5.059)"/>
+    <line id="Linie_131" data-name="Linie 131" class="cls-5" y1="4.5" x2="4.5" transform="translate(2.75 5.059)"/>
+    <line id="Linie_132" data-name="Linie 132" class="cls-5" y1="4.667" x2="4.667" transform="translate(0.583 5.059)"/>
+    <line id="Linie_133" data-name="Linie 133" class="cls-5" y1="3.935" x2="3.935" transform="translate(0.5 3.874)"/>
+    <line id="Linie_134" data-name="Linie 134" class="cls-5" y1="5.685" x2="5.685" transform="translate(10.75 3.874)"/>
+    <line id="Linie_135" data-name="Linie 135" class="cls-5" x1="1.744" y2="1.744" transform="translate(14.691 7.874)"/>
+    <line id="Linie_136" data-name="Linie 136" class="cls-5" x1="3.559" y2="3.559" transform="translate(12.691 6.059)"/>
+    <line id="Linie_137" data-name="Linie 137" class="cls-6" y2="1.5" transform="translate(4.5 3.559)"/>
+    <line id="Linie_138" data-name="Linie 138" class="cls-6" y2="1.5" transform="translate(12.5 3.559)"/>
+    <line id="Linie_139" data-name="Linie 139" class="cls-6" x2="4" transform="translate(12.5 3.559)"/>
+    <line id="Linie_140" data-name="Linie 140" class="cls-6" x2="4" transform="translate(0.5 3.559)"/>
+    <line id="Linie_141" data-name="Linie 141" class="cls-5" x1="2.25" y1="2.25" transform="translate(14.25 3.559)"/>
+    <line id="Linie_142" data-name="Linie 142" class="cls-5" y1="2.25" x2="2.25" transform="translate(0.5 3.559)"/>
+  </g>
+</svg>
