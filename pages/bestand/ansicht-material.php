@@ -13,28 +13,20 @@ $id = $_GET['id'] ?? '';
 
 require_once '../../assets/php/config.php';
 
-// Query the database for the information corresponding to the given bezeichnung
-$sql = "SELECT * FROM material WHERE id = ?";
+$sql = "SELECT * FROM material WHERE idMaterial = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if a row was returned
 if ($result->num_rows > 0) {
     $material = $result->fetch_assoc();
-
-    // Fill in the information on the page using the $material array
-    // For example:
-    $id = $material['id'];
+    $id = $material['idMaterial'];
     $anzahl = $material['anzahl'];
-    // ... and so on
 } else {
-    // Handle the case where no row was returned
-    echo "No material found with the given Id.";
+    echo "Kein Material mit der ID gefunden";
 }
 
-// Close the database connection
 $conn->close();
 ?>
 
@@ -55,7 +47,7 @@ $conn->close();
 </head>
 <body>
     <header>
-        <a href="#dashboard"><img id="logo" src="../../assets/icons/logo-small.png"></a>
+        <a href="../allgemein/dashboard.php"><img id="logo" src="../../assets/icons/logo-small.png"></a>
         <div id="user-header">
             <p id="username">Benutzername</p>
             <a onclick="toggleMenu()"><img id="user-image" src="../../assets/images/placeholders/Portrait_Placeholder.png"></a>
@@ -93,7 +85,7 @@ $conn->close();
                     <p style="color: white;" class="subtitle">Ausgegeben</p>
                 </div>
             </div>
-            <p><?php echo $material['id']; ?></p>
+            <p><?php echo $material['idMaterial']; ?></p>
         </div>
 
         <div class="infoHolder">
@@ -117,16 +109,14 @@ $conn->close();
                     <p class="subname">Kategorie</p>
                 </div>
                 <div class="disp-text">
-                    <p class="text-container center"><?php echo $material['anschaffung']; ?></p>
-                    <p class="subname">Anschaffung</p>
+                    <p class="text-container center"><?php if($material['idKiste'] === NULL){echo '/';} else {echo $material['idKiste'];} ?></p>
+                    <p class="subname">Nr. Lagerkiste</p>
                 </div>
             </div>
             <div class="grid-2">
                 <div class="disp-text">
-                    <a href="<?php echo $material['einkauf']; ?>" style="text-decoration: none; color: #232527;">
-                        <p class="text-container"><?php echo $material['einkaufText']; ?></p>
-                        <p class="subname">Einkauf<span data-feather="link"></span></p>
-                    </a>
+                    <p class="text-container center"><?php echo $material['hinzugefuegtAm']; ?></p>
+                    <p class="subname">Hinzugefügt am</p>
                 </div>
                 <div class="disp-text">
                     <p class="text-container"><?php echo $material['verpackung']; ?></p>

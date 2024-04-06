@@ -4,13 +4,16 @@ session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("location: ../login/login.php");
     exit;
+} elseif (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
+    header("location: ../login/logout.html");
+    exit;
 }
 
 $id = $_GET['id'] ?? '';
 
 require_once '../../assets/php/config.php';
 
-$sql = "SELECT * FROM material WHERE id = ?";
+$sql = "SELECT * FROM material WHERE idMaterial = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $id);
 $stmt->execute();
@@ -37,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $bemerkung_input = $_POST['bemerkung_input'] ?? '';
     $status_input = isset($_POST['status_input']) ? 1 : 0;
 
-    $id = $material['id'];
+    $id = $material['idMaterial'];
 
 
     $updates = [];
@@ -74,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 
     if (!empty($updates)) {
-        $sql = "UPDATE material SET " . implode(', ', $updates) . " WHERE id=$material[id]";
+        $sql = "UPDATE material SET " . implode(', ', $updates) . " WHERE idMaterial=$material[idMaterial]";
         $conn->query($sql);
         $id_code = urlencode($id);
         header("Location: ansicht-material.php?id=$id_code");
@@ -107,7 +110,7 @@ $conn->close();
 </head>
 <body>
     <header>
-        <a href="#dashboard"><img id="logo" src="../../assets/icons/logo-small.png"></a>
+        <a href="../allgemein/dashboard.php"><img id="logo" src="../../assets/icons/logo-small.png"></a>
         <div id="user-header">
             <p id="username">Benutzername</p>
             <a onclick="toggleMenu()"><img id="user-image" src="../../assets/images/placeholders/Portrait_Placeholder.png"></a>
@@ -145,7 +148,7 @@ $conn->close();
                     <p style="color: white;" class="subtitle">Ausgegeben</p>
                 </div>
             </div>
-            <p><?php echo $material['id']; ?></p>
+            <p><?php echo $material['idMaterial']; ?></p>
         </div>
 
         <form class="infoHolder" method="post">
@@ -174,16 +177,6 @@ $conn->close();
                         <option <?php if($material['kategorie'] == 'Sonstiges')echo 'selected'; ?> value="Sonstiges">Sonstiges</option>
                     </select>
                     <p class="subname">Kategorie</p>
-                </div>
-                <div class="disp-text">
-                    <input type="number" name="anschaffung_input" class="text-container" style="text-decoration: none; color: #232527;" value="<?php echo $material['anschaffung']; ?>" autocomplete="off" required/>
-                    <p class="subname">Anschaffung</p>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="disp-text">                        
-                    <input type="text" name="einkaufText_input" class="text-container" value="<?php echo $material['einkaufText']; ?>" autocomplete="off" required/>
-                    <p class="subname">Einkauf-Text<span data-feather="link"></span></p>
                 </div>
                 <div class="disp-text">
                     <select class="text-container" name="verpackung_input" required>
@@ -228,14 +221,13 @@ $conn->close();
 			</div>
 			<p>Möchtest du wirklich den Material-Eintrag aus der Datenbank löschen? Der Eintrag kann nicht wiederhergestellt werden.</p>
 			<div class="space-between" style="margin-top: 16px;">
-                <a id="delBtn" onclick="deleteMaterial(<?php echo $material['id']; ?>)" class="footer-button_long" style="background-color:#9B3535;">Löschen</a>
+                <a id="delBtn" onclick="deleteMaterial(<?php echo $material['idMaterial']; ?>)" class="footer-button_long" style="background-color:#9B3535;">Löschen</a>
 				<a onClick="closeModal('delModal')" class="footer-button_long light">Abbrechen</a>
 			</div>
 		</div>
 	</div>
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">
-        <!-- Aktionsknöpfe -->
         <a onclick="siteBack()" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
         <button type="submit" class="footer-button_long" style="font-size:16px;">Speichern</button>
         <a onclick="openModal()" id="getPhoto" class="footer-button light"><span data-feather="camera"></span></a>
@@ -322,7 +314,7 @@ document.getElementById("takePhoto").addEventListener("click", async () => {
     const imageData = canvas.toDataURL("image/png"); 
     const a = document.createElement("a"); 
     a.href = imageData; 
-    a.download = "<?php echo $material['id']; ?>.png"; 
+    a.download = "<?php echo $material['idMaterial']; ?>.png"; 
     a.click(); 
     closeModal(); 
 });

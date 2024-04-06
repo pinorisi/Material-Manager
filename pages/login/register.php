@@ -1,6 +1,14 @@
 <?php
 session_start();
 
+if (isset($_SESSION['loggedin']) || $_SESSION['loggedin'] == true) {
+  header("location: ../allgemein/dashboard.php");
+  exit;
+} elseif (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
+  header("location: ../login/wartungsmodus.html");
+  exit;
+}
+
 require_once '../../assets/php/config.php';
 
 if (isset($_POST['submit'])) {
@@ -10,7 +18,7 @@ if (isset($_POST['submit'])) {
   $re_password = $_POST['re-password'];
   $registerKey = $_POST['registerKey'];
 
-  $stmt = $conn->prepare("SELECT * FROM users WHERE registerKey = ?");
+  $stmt = $conn->prepare("SELECT * FROM benutzer WHERE registrierSchluessel = ?");
   $stmt->bind_param("s", $registerKey);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -18,7 +26,7 @@ if (isset($_POST['submit'])) {
   if ($result->num_rows == 0) {
       $error_message = "Ungültiger Registrierungsschlüssel.";
   } else {
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ? OR email = ?");
+    $stmt = $conn->prepare("SELECT * FROM benutzer WHERE benutzername = ? OR emailAdresse = ?");
     $stmt->bind_param("ss", $username, $email);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -28,7 +36,7 @@ if (isset($_POST['submit'])) {
     } else {
       $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-      $stmt = $conn->prepare("UPDATE users SET username = ?, email = ?, password = ? WHERE registerKey = ?");
+      $stmt = $conn->prepare("UPDATE benutzer SET benutzername = ?, emailAdresse = ?, passwort = ? WHERE registrierSchluessel = ?");
       $stmt->bind_param("ssss", $username, $email, $hashed_password, $registerKey);
 
       if ($stmt->execute()) {

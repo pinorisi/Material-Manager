@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+if (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
+    header("location: ../login/wartungsmodus.html");
+    exit;
+}
+
 require_once '../../assets/php/config.php';
 
 $resetKey = $_GET['key'];

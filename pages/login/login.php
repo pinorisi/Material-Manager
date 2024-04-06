@@ -1,13 +1,18 @@
 <?php
 session_start();
 
+if (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
+    header("location: ../login/wartungsmodus.html");
+    exit;
+}
+
 require_once '../../assets/php/config.php';
 
 if (isset($_POST['submit'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT id, username, password, last_login FROM users WHERE username = ?";
+    $sql = "SELECT idbenutzer, benutzername, passwort, letzterLogin FROM benutzer WHERE benutzername = ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
@@ -16,10 +21,10 @@ if (isset($_POST['submit'])) {
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            $id = $row['id'];
-            $db_username = $row['username'];
-            $db_password = $row['password'];
-            $last_login = $row['last_login'];
+            $id = $row['idbenutzer'];
+            $db_username = $row['benutzername'];
+            $db_password = $row['passwort'];
+            $last_login = $row['letzterLogin'];
 
             if (password_verify($password, $db_password)) {
                 $_SESSION['loggedin'] = true;
@@ -27,7 +32,7 @@ if (isset($_POST['submit'])) {
                 $_SESSION['username'] = $username;
 
                 $current_time = date("Y-m-d H:i:s");
-                $sql_update = "UPDATE users SET last_login = ? WHERE id = ?";
+                $sql_update = "UPDATE benutzer SET letzterLogin = ? WHERE idbenutzer = ?";
                 $stmt_update = $conn->prepare($sql_update);
                 $stmt_update->bind_param("ss", $current_time, $id);
                 $stmt_update->execute();
@@ -35,7 +40,7 @@ if (isset($_POST['submit'])) {
 
                 header("location: ../allgemein/dashboard.php");
             } else {
-                $error_message = 'Benutzername oder Passwort ist falsch.';
+                $error_message = 'Benutzername oder Passwort ist falsch2.' . $password . ', ' . $db_password;
             }
         }
     } else {

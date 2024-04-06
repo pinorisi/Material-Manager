@@ -43,53 +43,33 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <main>
         <h1>Hinzufügen</h1>
-        <p class="subname">Einen neuen Gegenstand in die Datenbank einfügen.</p>
+        <p class="subname">Eine neue Kiste dem Materiallager hinzufügen.</p>
         
 
-        <form class="infoHolder" method="post" action="../../assets/php/mat-add.php">
+        <form class="infoHolder" method="post" action="../../assets/php/kiste-add.php">
             <div class="disp-text">
                 <input type="text" id="bezeichnung_input" name="bezeichnung_input" class="text-container" autocomplete="off" required/>
                 <p class="subname">Bezeichnung</p>
             </div>
             <div class="grid-2">
-                <div class="disp-text">
-                    <input type="number" id="anzahl_input" name="anzahl_input" class="text-container" style="text-decoration: none; color: #232527;" autocomplete="off" required/>
-                    <p class="subname">Anzahl</p>
+            <div class="disp-text">
+                    <select class="text-container" name="kistenart_input" required>
+                        <option selected disabled hidden>Auswählen...</option>
+                        <option value="1">Eurobox 32cm</option>
+                        <option value="2">Eurobox 17cm</option>
+                        <option value="3">Gitterbox 32cm</option>
+                        <option value="4">Gitterbox 17cm</option>
+                        <option value="5">Karton</option>
+                        <option value="0">Sonstiges</option>
+                    </select>
+                    <p class="subname">Kistenart</p>
                 </div>
                 <div class="disp-text">
                     <input type="text" id="lagerort_input" name="lagerort_input" class="text-container" autocomplete="off" required/>
                     <p class="subname">Lagerort</p>
                 </div>
             </div>
-            <div class="grid-2">
-                <div class="disp-text">
-                    <select class="text-container" id="kategorie_input" name="kategorie_input" required>
-                        <option disabled selected hidden></option>
-                        <option value="Zeltmaterial">Zeltmaterial</option>
-                        <option value="Freizeit">Freizeit</option>
-                        <option value="Küchenmaterial">Küchenmaterial</option>
-                        <option value="Werkzeug">Werkzeug</option>
-                        <option value="Ersatzteil">Ersatzteil</option>
-                        <option value="Sonstiges">Sonstiges</option>
-                    </select>
-                    <p class="subname">Kategorie</p>
-                </div>
-                <div class="disp-text">
-                    <select class="text-container" id="verpackung_input" name="verpackung_input" required>
-                        <option disabled selected hidden></option>
-                        <option value="Packsack">Packsack</option>
-                        <option value="Kiste">Kiste</option>
-                        <option value="Tasche">Tasche</option>
-                        <option value="Sonstiges">Sonstiges</option>
-                        <option value="Keine">Keine</option>
-                    </select>
-                    <p class="subname">Verpackung</p>
-                </div>
-            </div>
-            <div class="disp-text">
-                <input type="text" id="bemerkung_input" name="bemerkung_input" class="text-bem" autocomplete="off"/>
-                <p class="subname">Bemerkungen</p>
-            </div>
+            
     </main>
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">

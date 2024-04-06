@@ -1,33 +1,38 @@
 <?php
 session_start();
 
+if (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
+    header("location: ../login/wartungsmodus.html");
+    exit;
+}
+
 require_once '../../assets/php/config.php';
 
 if (isset($_POST['submit'])) {
     $nameOrEmail = $_POST['nameOrEmail'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ? OR username = ?");
-    $stmt->bind_param("ss", $nameOrEmail, $nameOrEmail);
+    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("ss", $nameOrEmail);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 0) {
-        $error_message = "Email oder Nutzername nicht gefunden.";
+        $error_message = "Email nicht gefunden.";
     } else {
       $resetKey = bin2hex(random_bytes(8));
 
-      $stmt = $conn->prepare("UPDATE users SET resetKey = ? WHERE email = ? OR username = ?");
-      $stmt->bind_param("sss", $resetKey, $nameOrEmail, $nameOrEmail);
+      $stmt = $conn->prepare("UPDATE users SET resetKey = ? WHERE email = ?");
+      $stmt->bind_param("sss", $resetKey, $nameOrEmail);
       $stmt->execute();
 
       $to = $_POST['nameOrEmail'];
       $subject = "Passwort zurücksetzen";
       $message = "Click the following link to reset your password: <br><br>http://localhost/materialManager/pages/login/reset-password.php?key=$resetKey&email=$to";
-      $headers = "From: your-email@example.com" . "\r\n" .
-        "Reply-To: your-email@example.com" . "\r\n" .
+      $headers = "From: materialmanager@pinorisi.de" . "\r\n" .
+        "Reply-To: materialmanager@pinorisi.de" . "\r\n" .
         "X-Mailer: PHP/" . phpversion();
       mail($to, $subject, $message, $headers);
-
+    
       $error_message = "Ein Link zum zurücksetzen deines Passwortes wurde an deine Email gesendet.";
     }
 }

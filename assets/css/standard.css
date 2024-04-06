@@ -9,11 +9,12 @@
 html{
     width: 100%;
     height: 100%;
+    overflow: hidden;
 }
 
 body{
-    width: 100%;
-    height: 100vh;
+    width: 100vw;
+    height: 100%;
     margin: 0;
     font-size: 16px;
     overflow: hidden;
@@ -77,7 +78,7 @@ header{
     right: -150px;
     margin-top: 16px;
     background-color: white;
-    transition: right 0.15s ease-out;
+    transition: right 0.1s ease-out;
 }
 
 #user-menu.open{
@@ -99,6 +100,31 @@ header{
     color: white;
     height: 32px;
     cursor: pointer;
+    margin-top: 4px;
+}
+
+#footer-menu{
+    border: 1px solid #232527;
+    border-radius: 4px;
+    width: 125px;
+    padding: 8px 4px;
+    position: absolute;
+    right: -150px;
+    bottom: 58px;
+    margin-bottom: 16px;
+    background-color: white;
+    transition: right 0.1s ease-out;
+}
+
+#footer-menu.open{
+    right: 40px;
+}
+
+#footer-menu ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .menu-link{
@@ -386,6 +412,7 @@ input[type='checkbox']{
     height: 26px;
     padding: 0 4px 0 4px;
     cursor: pointer;
+    align-items: center;
 
     .vertical-line{
         border-left: 2px solid #CCCCCC;
@@ -408,7 +435,7 @@ input[type='checkbox']{
 }
 
 .profile-img{
-    width: 70%;
+    width: 25%;
     aspect-ratio: 1 / 1;
     background-size: cover;
     border-radius: 4px;
@@ -433,6 +460,12 @@ input[type='checkbox']{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+
+    p{
+        text-decoration: none;
+        color: #232527;
+    }
 }
 
 .delMatBtn{
@@ -442,4 +475,33 @@ input[type='checkbox']{
     color: white;
     border-radius: 4px;
     text-align: center;
+
+    .feather{
+        height: 18px;
+        width: 18px;
+    }
+}
+
+#qrcode{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 16px;
+}
+
+details{
+    width: 100%;
+    &[open] summary{
+        border-bottom: 2px solid #232527;
+    }
+}
+
+summary{
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    
 }

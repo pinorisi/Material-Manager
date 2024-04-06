@@ -57,25 +57,13 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         <ul class="bestand-list">
         <?php
             require_once('../../assets/php/config.php');
-        
-            $sql = "SELECT bezeichnung, idMaterial, anzahl, status FROM material";
+
+            $sql = "SELECT bezeichnung, idMaterial, anzahl, status FROM material WHERE status = 1";
             $result = $conn->query($sql);
-        
+
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    switch ($row["status"]) {
-                        case "1":
-                            $statusIcon = 'data-feather="tool"';
-                            break;
-                        case "2":
-                            $statusIcon = 'data-feather="chevrons-right"';
-                            break;
-                        case "3":
-                            $statusIcon = 'data-feather="briefcase"';
-                            break;
-                        default:
-                            $statusIcon = "";
-                    }
+                    $statusIcon = 'data-feather="tool"';
                     echo '<li class="space-between blli" onclick="toMaterialPage(\'' . $row["idMaterial"] . '\')">
                             <p>' . $row["bezeichnung"] . '</p>
                             <div style="display: flex;flex-direction: row;gap: 8px;align-items: center;">
@@ -84,11 +72,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         </li>';
                 }
             } else {
-                echo "<li>Keine Daten gefunden</li>";
+                echo "<li>Keine Einträge mit status 'Defekt' gefunden.</li>";
             }
         
             $conn->close();
-            ?>
+        ?>
         </ul>
     </main>
 
