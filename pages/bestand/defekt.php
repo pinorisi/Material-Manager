@@ -72,7 +72,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                         </li>';
                 }
             } else {
-                echo "<li>Keine Einträge mit status 'Defekt' gefunden.</li>";
+                echo "<li>Keine Einträge gefunden.</li>";
             }
         
             $conn->close();

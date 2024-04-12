@@ -76,9 +76,34 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
             ?>
         </ul>
 
+        <p style="margin-top:20px;"><b>Anstehend</b></p>
+        <hr style="margin-top:8px;">
+        <ul class="bestand-list" style="height:10%;">
+            <?php
+                require_once('../../assets/php/config.php');
+                $currentDate = date("Y.m.d");
+        
+                $sql = "SELECT idAktion, bezeichnung, beginn, ende FROM aktionen WHERE beginn > '$currentDate' AND beginn <> '$currentDate'";
+                $result = $conn->query($sql);
+            
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        echo '<li class="space-between blli" onclick="toAktionspage(\'' . $row["idAktion"] . '\')">
+                                <p>' . $row["bezeichnung"] . '</p>
+                                <div style="display: flex;flex-direction: row;gap: 8px;align-items: center;">
+                                    <span style="width: 14px; height: 14px;"></span><div class="vertical-line"></div><p style="text-align: center; width:auto;">ab ' . date("d.m.Y", strtotime($row['beginn'])) . '</p>
+                                </div>
+                            </li>';
+                    }
+                } else {
+                    echo "<li>Keine Anstehenden Aktionen.</li>";
+                }
+            ?>
+        </ul>
+
         <p style="margin-top:20px;"><b>Historie</b></p>
         <hr style="margin-top:8px;">
-        <ul class="bestand-list" style="height:60%;">
+        <ul class="bestand-list" style="height:38%;">
             <?php
                 require_once('../../assets/php/config.php');
                 $currentDate = date("Y.m.d");
@@ -105,7 +130,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </main>
 
     <footer>
-        <a onclick="siteBack()" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
+        <a href="../allgemein/dashboard.php" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
         <a href="erstellen.php" class="footer-button_long"><span data-feather="plus"></span>Ausgabe</a>
     </footer>
 </body>

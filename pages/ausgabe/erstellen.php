@@ -116,7 +116,7 @@ function closeModal(id) {
 }
 
 function toAktionspage(id){
-    window.location.href = '../ausgabe/ansicht-aktion.php?id=' + encodeURIComponent(id);
+    window.location.href = '../ausgabe/ansicht.php?id=' + encodeURIComponent(id);
 }
 
 function searchBestand() {

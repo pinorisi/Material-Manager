@@ -31,7 +31,7 @@ $resultDfkt = $stmtDfkt->get_result();
 $rowDfkt = $resultDfkt->fetch_row();
 $defektCount = $rowDfkt[0];
 
-$stmtIl = $conn->prepare("SELECT COUNT(*) FROM material WHERE status IN (0, 1);");
+$stmtIl = $conn->prepare("SELECT COUNT(*) FROM material");
 $stmtIl->execute();
 $resultIl = $stmtIl->get_result();
 $rowIl = $resultIl->fetch_row();
@@ -101,17 +101,17 @@ $conn->close();
                     <p style="font-size:40px;"><?php echo $defektCount ?></p>
                     <p>Defekt</p>
                 </a>
-                <div class="count-container" style="border-left:8px solid #71A462;">
+                <a class="count-container" style="border-left:8px solid #71A462;" href="../bestand/bestand.php">
                     <p style="font-size:40px;"><?php echo $lagerCount ?></p>
-                    <p>Im Lager</p>
+                    <p>Im Bestand</p>
+                </a>
+                <div class="count-container" style="border-left:8px solid #6D8788;">
+                    <p style="font-size:40px;"><?php echo $ausgegebenCount ?></p>
+                    <p>Ausgegeben</p>
                 </div>
                 <div class="count-container" style="border-left:8px solid #FFC504;">
                     <p style="font-size:40px;"><?php echo $verliehenCount ?></p>
                     <p>Verliehen</p>
-                </div>
-                <div class="count-container" style="border-left:8px solid #6D8788;">
-                    <p style="font-size:40px;"><?php echo $ausgegebenCount ?></p>
-                    <p>Ausgegeben</p>
                 </div>
             </div>
 
@@ -132,7 +132,7 @@ $conn->close();
 				<a onclick="closeModal('modal')"><span data-feather="arrow-left"></span></a>
 				<p style="width: 100%; text-align: center;">QR-Code scannen</p>
 			</div>
-            <video id="qrVideo" width="100%" style="aspect-ratio: 1/1;"></video>
+            <video id="qrVideo" width="100%" style="aspect-ratio: 1/1;" hidden></video>
 			<div class="space-between" style="margin-top: 16px;">
 				<a onClick="closeModal('modal')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
                 <p id="qrContent">...</p>
@@ -177,32 +177,41 @@ function openModal(){
 }
 
 function toLagerPage(id){
-    window.location.href = 'ansicht-kiste.php?id=' + encodeURIComponent(id);
+    window.location.href = '../lager/ansicht-kiste.php?id=' + encodeURIComponent(id);
 }
 
 function scanCode() {
-    openModal();
+openModal();
+const video = document.getElementById('qrVideo');
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-    const video = document.getElementById('imagePrev');
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-        .then(function(stream) {
+if (navigator.getUserMedia) {
+    navigator.getUserMedia({ video: { facingMode: 'environment' } },
+        function(stream) {
             video.srcObject = stream;
-            video.play();
-            video.addEventListener('canplay', function() {
+            video.onloadedmetadata = function() {
+                video.play();
+                video.removeAttribute('hidden');
                 scanQR(stream);
-            });
-        })
-        .catch(function(err) {
+            };
+        },
+        function(err) {
             console.error('Error accessing the camera: ', err);
-            alert('Die Kamer konnte nicht geöffnet werden.');
-            closeModal('modal');
-        });
+            alert('Die Kamera konnte nicht geöffnet werden. Ist eine Kamera vorhanden?');
+           closeModal('modal');
+        }
+    );
+} else {
+    console.error('getUserMedia is not supported in this browser.');
+    alert('Die Kamera konnte nicht geöffnet werden.%0A Stelle sicher, dass die Verbindung verschlüsselt ist. (https://)');
+    closeModal('modal');
+}
 }
 
 function scanQR(stream) {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
-    const video = document.getElementById('imagePrev');
+    const video = document.getElementById('qrVideo');
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -214,21 +223,19 @@ function scanQR(stream) {
         if (code) {
             const qrContent = code.data;
             const kisteId = extractId(qrContent);
-            alert('QR-Code gescannt: ' + qrContent);
+            //alert('QR-Code gescannt: ' + qrContent);
             toLagerPage(kisteId);
-            
+
             if (navigator.vibrate) {
                 navigator.vibrate(100);
             }
-            
+
             clearInterval(scanInterval);
             closeModal('modal');
             if (stream) {
                 const tracks = stream.getTracks();
                 tracks.forEach(track => track.stop());
             }
-        }else{
-            window.location.href = 'nicht_gefunden.php';
         }
     }, 1000);
 }
@@ -236,7 +243,7 @@ function scanQR(stream) {
 function closeModal(id) {
     var modal = document.getElementById(id);
     modal.classList.remove('open');
-    const video = document.getElementById('imagePrev');
+    const video = document.getElementById('qrVideo');
     if (video.srcObject) {
         const stream = video.srcObject;
         const tracks = stream.getTracks();

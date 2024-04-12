@@ -16,7 +16,7 @@ if (isset($_POST['bezeichnung_input']) && isset($_POST['beginn_input']) && isset
 
     if ($conn->query($sql) === TRUE) {
         $id = $conn->insert_id;
-        header("Location: ../../pages/ausgabe/bearbeiten.php?id=" . urlencode($id));
+        header("Location: ../../../pages/ausgabe/bearbeiten.php?id=" . urlencode($id));
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }

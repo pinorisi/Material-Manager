@@ -11,18 +11,18 @@ require_once '../../assets/php/config.php';
 if (isset($_POST['submit'])) {
     $nameOrEmail = $_POST['nameOrEmail'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("ss", $nameOrEmail);
+    $stmt = $conn->prepare("SELECT * FROM benutzer WHERE emailAdresse = ?");
+    $stmt->bind_param("s", $nameOrEmail);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows == 0) {
-        $error_message = "Email nicht gefunden.";
+        $error_message = "Keinen Account mit dieser Email-Adresse gefunden.";
     } else {
       $resetKey = bin2hex(random_bytes(8));
 
-      $stmt = $conn->prepare("UPDATE users SET resetKey = ? WHERE email = ?");
-      $stmt->bind_param("sss", $resetKey, $nameOrEmail);
+      $stmt = $conn->prepare("UPDATE benutzer SET resetSchluessel = ? WHERE emailAdresse = ?");
+      $stmt->bind_param("ss", $resetKey, $nameOrEmail);
       $stmt->execute();
 
       $to = $_POST['nameOrEmail'];

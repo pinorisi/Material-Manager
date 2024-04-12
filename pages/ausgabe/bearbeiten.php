@@ -91,15 +91,54 @@ if ($result->num_rows > 0) {
 
             <h3 style="margin-top: 16px;">Material hinzufügen</h3>
             <ul class="bestand-list" style="margin-top:0; height:55%;">
-            <?php
-                //Collapsible der Transportkisten mit dem zugeordneten Material
-            ?>
+                <?php
+                    require_once('../../assets/php/config.php');
+
+                    $sql = "SELECT tk.idTransportkiste, tk.bezeichnung AS Transportkiste
+                            FROM transportkisten tk
+                            LEFT JOIN material_transportkiste_aktion mta ON tk.idTransportkiste = mta.idTransportkiste
+                            LEFT JOIN aktionen a ON mta.idAktion = a.idAktion
+                            WHERE a.idAktion = $id
+                            GROUP BY tk.idTransportkiste";
+                    $result = $conn->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<li style='height:auto; background-color:white;' id='transportkiste_" . $row['idTransportkiste'] . "' class='listDetail'><details>
+                                    <summary>
+                                        <p style='width:80%'>$row[Transportkiste]</p>
+                                        <div>
+                                            <a class='delMatBtn' onclick='unassignTransportkiste(\"" . $row["idTransportkiste"] . "\", \"" . $aktion["idAktion"] . "\")'><span data-feather='x'></span></a>
+                                            <a class='delMatBtn' style='background-color: #6D8788;' onclick='assignMaterialModal(\"" . $row['idTransportkiste'] . "\")'><span style='margin-top:1px;' data-feather='plus'></span></a>
+                                        </div>
+                                    </summary>
+                                    <ul>";
+                                    $sql2 = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
+                                             FROM material_transportkiste_aktion mta
+                                             JOIN material m ON mta.idMaterial = m.idMaterial
+                                             WHERE mta.idTransportkiste = $row[idTransportkiste] AND mta.idAktion = $id";
+                                    $result2 = $conn->query($sql2);
+                                    if ($result2->num_rows > 0) {
+                                    
+                                        while ($row2 = $result2->fetch_assoc()) {
+                                            echo "<li class='subname space-between' id='materialkiste_" . $row2['MaterialId'] . "' style='padding-right:11px;'><p>$row2[Material]</p><a class='delMatBtn' onclick='unassignMaterial(\"" . $row2['MaterialId'] . "\", \"" . $aktion['idAktion'] . "\")'><span style='margin-top:1px; margin-left:0px;' data-feather='x'></span></a></li>";
+                                        }
+                                    } else {
+                                        echo "<li class='subname space-between'><p>Kein Material</p></li>";
+                                    }
+                            echo "</ul>
+                                  </details></li>";
+                        }
+                    } else {
+                        echo "<li style='height:auto;'><p class='subtitle'>Der Aktion wurde kein Material zugeordnet</p></li>";
+                    }
+                ?>
             </ul>
     </main>
 
     <footer>
         <a onclick="siteBack()" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
-        <button type="submit" class="footer-button_long" style="font-size:16px;">Speichern</button>
+        <a onclick="siteBack()" class="footer-button_long" style="font-size:16px;">Speichern</a>
         <a onclick="openModal('modalKisten')" class="footer-button"><span data-feather="plus"></span></a>
     </footer>
 
@@ -114,8 +153,17 @@ if ($result->num_rows > 0) {
                     <?php
                         require_once('../../assets/php/config.php');
 
-                        $sql2 = "SELECT * FROM transportkisten";
-                        $result2 = $conn->query($sql2);
+                        $sql2 = "SELECT * FROM transportkisten 
+                                  WHERE idTransportkiste NOT IN (
+                                      SELECT idTransportkiste FROM material_transportkiste_aktion 
+                                      WHERE idAktion = ?
+                                  )";
+                        $stmt = $conn->prepare($sql2);
+                        $stmt->bind_param("i", $id);
+                        $id = $aktion["idAktion"];
+                        $stmt->execute();
+                        $result2 = $stmt->get_result();
+                                
                         if ($result2->num_rows > 0) {
                             while ($row = $result2->fetch_assoc()) {
                                 switch ($row["icon"]) {
@@ -125,15 +173,15 @@ if ($result->num_rows > 0) {
                                     default:
                                         $chestIcon = "../../assets/icons/half_box.svg";
                                 }
-                                echo '<li class="space-between blli" id="material_' . $row["idTransportkiste"] . '">
+                                echo '<li class="space-between blli" id="transportkiste' . $row["idTransportkiste"] . '">
                                         <p>' . $row["bezeichnung"] . '</p>
                                         <div style="display: flex;flex-direction: row;gap: 8px;align-items: center;">
-                                        <img src="' . $chestIcon . '" style="height: 16px; aspect-ratio: 1/1;"><div class="vertical-line"></div><a class="delMatBtn" style="background-color: #6D8788;" onclick="assignTransportkiste(\'' . $row["idTransportkiste"] . '\', \'' . $id . '\')"><span style="margin-top:1px;" data-feather="plus"></span></a>
+                                        <img src="' . $chestIcon . '" style="height: 16px; aspect-ratio: 1/1;"><div class="vertical-line"></div><a class="delMatBtn" style="background-color: #6D8788;" onclick="assignTransportkiste(\'' . $row["idTransportkiste"] . '\', \'' . $aktion["idAktion"] . '\')"><span style="margin-top:1px;" data-feather="plus"></span></a>
                                         </div>
                                     </li>';
                             }
                         } else {
-                            echo "<li style='height:auto;>Keine Transportkisten gefunden</li>";
+                            echo "<li style='height:auto;'>Keine Transportkisten gefunden</li>";
                         }
                     ?>
                 </ul>
@@ -147,14 +195,14 @@ if ($result->num_rows > 0) {
     <div class="modal" id="modalMaterial">
 		<div class="modal-content">
 			<div class="space-between">
-				<a onclick="closeModal('modal')"><span data-feather="arrow-left"></span></a>
-				<p style="width: 100%; text-align: center;">Material</p>
+				<a onclick="closeModal('modalMaterial')"><span data-feather="arrow-left"></span></a>
+				<p style="width: 100%; text-align: center;">Material hinzufügen</p>
 			</div>
             <div>
-                <form class="search-container">
+                <div class="search-container">
                     <input type="search" id="search-bar" placeholder="Suchen..." onkeyup="searchBestand()">
                     <button type="button"><span data-feather="search"></span></button>
-                </form>
+                    </div>
                 <p class="subname" style="margin-top: 2px; margin-bottom: 16px;" id="resultCount">0 Ergebnisse gefunden</p>
                 <ul class="bestand-list" style="margin-top:0; height:40vh;">
                     <?php
@@ -183,7 +231,7 @@ if ($result->num_rows > 0) {
                 </ul>
             </div>
 			<div class="space-between" style="margin-top: 16px;">
-				<a onClick="closeModal('modal')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
+				<a onClick="closeModal('modalMaterial')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
 			</div>
 		</div>
 	</div>
@@ -196,7 +244,7 @@ if ($result->num_rows > 0) {
 			</div>
 			<p>Möchtest du wirklich die Aktion aus der Datenbank löschen? Der Eintrag kann nicht wiederhergestellt werden.</p>
 			<div class="space-between" style="margin-top: 16px;">
-                <a id="delBtn" onclick="deleteKiste(<?php echo $kisten['idKiste']; ?>)" class="footer-button_long" style="background-color:#9B3535;">Löschen</a>
+                <a id="delBtn" onclick="deleteAktion(<?php echo $aktion['idAktion']; ?>)" class="footer-button_long" style="background-color:#9B3535;">Löschen</a>
 				<a onClick="closeModal('delModal')" class="footer-button_long light">Abbrechen</a>
 			</div>
 		</div>
@@ -251,33 +299,82 @@ function searchBestand() {
     document.getElementById('resultCount').textContent = (searchResults + " Ergebnisse gefunden");
 }
 
-function assignToAktion(idMaterial, idAktion){
+var selectedTransportkiste;
+
+function assignMaterialModal(idTransportkiste){
+    selectedTransportkiste = idTransportkiste;
+    document.getElementById('modalMaterial').classList.add('open');
+}
+
+function assignMaterial(idMaterial, idAktion){
     $.ajax({
         url: '../../assets/php/aktionen/assign-material.php',
         type: 'POST',
-        data: { material_id: idMaterial, aktion_id: idAktion},
+        data: { material_id: idMaterial, aktion_id: idAktion, transportkiste_id: selectedTransportkiste},
         success: function(response) {
             location.reload();
         },
         error: function(xhr, status, error) {
-            console.error('Fehler beim zuweisen des Materials zur Aktion:', error);
+            console.error('Fehler beim zuweisen des Materials zur Transportkiste der Aktion:', error);
         }
     });
 }
 
-function delMat(matId) {
+function assignTransportkiste(idTransportkiste, idAktion){
+    $.ajax({
+        url: '../../assets/php/aktionen/assign-box.php',
+        type: 'POST',
+        data: { transportkiste_id: idTransportkiste, aktion_id: idAktion},
+        success: function(response) {
+            location.reload();
+        },
+        error: function(xhr, status, error) {
+            console.error('Fehler beim zuweisen der Transportkiste zur Aktion:', error);
+        }
+    });
+}
+
+function unassignTransportkiste(idTransportkiste, idAktion) {
+    $.ajax({
+        url: '../../assets/php/aktionen/unassign-box.php',
+        type: 'POST',
+        data: {transportkiste_id: idTransportkiste, aktion_id: idAktion},
+        success: function(response) {
+            $('#transportkiste_' + idTransportkiste).remove();
+            console.log('Transportkiste ' + idTransportkiste + ' erfolgreich aus Aktion ' + idAktion + ' entfernt.');
+        },
+        error: function(xhr, status, error) {
+            console.error('Fehler beim entfernen der Transportkiste:', error);
+        }
+    });
+}
+
+function unassignMaterial(idMaterial, idAktion) {
     $.ajax({
         url: '../../assets/php/aktionen/unassign-material.php',
         type: 'POST',
-        data: { idMaterial: matId, idAktion: '<?php echo $aktion['idAktion']; ?>' },
+        data: {material_id: idMaterial, aktion_id: idAktion},
         success: function(response) {
-            $('#material_' + matId).remove();
-            console.log('Material erfolgreich gelöscht.');
+            $('#materialkiste_' + idMaterial).remove();
+            console.log('Material (' + idMaterial + ') erfolgreich aus Aktion (' + idAktion + ') entfernt.');
         },
         error: function(xhr, status, error) {
-            console.error('Fehler beim Löschen des Materials:', error);
+            console.error('Fehler beim entfernen der Transportkiste:', error);
         }
     });
+}
+
+function deleteAktion(idAktion){
+    console.log(idAktion);
+    $.ajax({
+            url: "../../assets/php/aktionen/delete.php",
+            type: "POST",
+            data: { delete_id: idAktion },
+            success: function() {
+                window.location.href="uebersicht.php"
+                console.log("erfolgreich gelöscht.")
+            }
+        });
 }
 
 function delAktion(){

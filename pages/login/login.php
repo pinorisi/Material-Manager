@@ -40,7 +40,7 @@ if (isset($_POST['submit'])) {
 
                 header("location: ../allgemein/dashboard.php");
             } else {
-                $error_message = 'Benutzername oder Passwort ist falsch2.' . $password . ', ' . $db_password;
+                $error_message = 'Benutzername oder Passwort ist falsch.';
             }
         }
     } else {
