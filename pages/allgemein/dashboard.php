@@ -105,10 +105,10 @@ $conn->close();
                     <p style="font-size:40px;"><?php echo $lagerCount ?></p>
                     <p>Im Bestand</p>
                 </a>
-                <div class="count-container" style="border-left:8px solid #6D8788;">
+                <a class="count-container" style="border-left:8px solid #71A462;" href="../bestand/ausgegeben.php">
                     <p style="font-size:40px;"><?php echo $ausgegebenCount ?></p>
-                    <p>Ausgegeben</p>
-                </div>
+                    <p>Ausgeben</p>
+                </a>  
                 <div class="count-container" style="border-left:8px solid #FFC504;">
                     <p style="font-size:40px;"><?php echo $verliehenCount ?></p>
                     <p>Verliehen</p>
@@ -144,7 +144,7 @@ $conn->close();
         <ul>
             <li><a href="../bestand/erstellen.php" class="menu-link">Material</a></li>
             <li><a href="../lager/kiste-erstellen.php" class="menu-link">Lagerkiste</a></li>
-            <li><a href="../lager/erstellen.php" class="menu-link">Transportkiste</a></li>
+            <li><a href="../allgemein/transportkiste-erstellen.php" class="menu-link">Transportkiste</a></li>
         </ul>
     </div>
 

@@ -47,7 +47,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     </div>
 
     <main>
-        <h1>Defekt</h1>
+        <h1>Ausgegeben</h1>
         <form class="search-container">
             <input type="search" id="search-bar" placeholder="Suchen..." onkeyup="searchBestand()">
             <button type="button"><span data-feather="search"></span></button>
@@ -58,7 +58,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
         <?php
             require_once('../../assets/php/config.php');
 
-            $sql = "SELECT bezeichnung, idMaterial, anzahl, status FROM material WHERE status = 1";
+            $sql = "SELECT bezeichnung, idMaterial, anzahl, status FROM material WHERE status = 2";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
