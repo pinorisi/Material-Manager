@@ -10,9 +10,10 @@ if (isset($_POST['bezeichnung_input']) && isset($_POST['beginn_input']) && isset
     $ende = $_POST['ende_input'];
     $verantwortlicher = $_POST['verantwortlicher_input'];
     $ersteller = $_SESSION['username'];
+    $date = date("Y.m.d");
 
-    $sql = "INSERT INTO aktionen (bezeichnung, beginn, ende, ansprechpartner, ersteller)
-        VALUES ('$bezeichnung', '$beginn', '$ende', '$verantwortlicher', '$ersteller')";
+    $sql = "INSERT INTO aktionen (bezeichnung, beginn, ende, ansprechpartner, ersteller, hinzugefuegtAm)
+        VALUES ('$bezeichnung', '$beginn', '$ende', '$verantwortlicher', '$ersteller', '$date')";
 
     if ($conn->query($sql) === TRUE) {
         $id = $conn->insert_id;

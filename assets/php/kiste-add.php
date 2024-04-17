@@ -7,9 +7,11 @@ if (isset($_POST['bezeichnung_input']) && isset($_POST['kistenart_input']) && is
     $bezeichnung = $_POST['bezeichnung_input'];
     $kistenart = (int) $_POST['kistenart_input'];
     $lagerort = $_POST['lagerort_input'];
+    $actDate = date("Y.m.d");
+    $user = $_SESSION['username'];
 
-    $sql = "INSERT INTO kisten (bezeichnung, icon, lagerort)
-        VALUES ('$bezeichnung', '$kistenart', '$lagerort')";
+    $sql = "INSERT INTO kisten (bezeichnung, icon, lagerort, hinzugefuegtAm, hinzugefuegtVon)
+        VALUES ('$bezeichnung', '$kistenart', '$lagerort', '$actDate', '$user')";
 
     if ($conn->query($sql) === TRUE) {
         $id = $conn->insert_id;
