@@ -22,7 +22,10 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $users = $result->fetch_assoc();
 } else {
-    echo "Kein Benutzer mit der Id gefunden.";
+    // Kein Benutzer mit der Id gefunden. Hier könnte eine sicherere Fehlermeldung stehen.
+    // Vermeide es, Details preiszugeben, die einem potenziellen Angreifer helfen könnten.
+    header("HTTP/1.1 404 Not Found");
+    exit;
 }
 
 $conn->close();
@@ -49,7 +52,8 @@ $conn->close();
         <!-- Logo und Benutzer -->
         <a href="dashboard.php"><img id="logo" src="../../assets/icons/logo-small.png"></a>
         <div id="user-header">
-            <p id="username">Benutzername</p>
+            <!-- Hier sollten Benutzername und Bild dynamisch aus der Session gesetzt werden -->
+            <p id="username"><?php echo htmlspecialchars($_SESSION['username']); ?></p>
             <a onclick="toggleMenu()"><img id="user-image" src="../../assets/images/placeholders/Portrait_Placeholder.png"></a>
         </div>
     </header>
@@ -57,14 +61,14 @@ $conn->close();
         <ul>
             <li><a class="menu-link">Profil</a></li>
             <li><a class="menu-link">Einstellungen</a></li>
-            <li><a class="menu-link">Abmelden</a></li>
+            <li><a class="menu-link" href="../login/logout.php">Abmelden</a></li>
         </ul>
     </div>
 
     <main>
         <h1>404 Server Error</h1>
         <p class="subname">Not Found</p>
-        <p style="margin-top: 20px;">Die Seite die du suchst existiert entweder nicht oder wurde woanders hin verschoben.<br><br>Was du tun kannst:</p>
+        <p style="margin-top: 20px;">Die Seite die du suchst existiert entweder nicht oder wurde woanders hin verschoben.</p>
     </main>
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">
@@ -96,7 +100,5 @@ function pageRefresh(){
 function siteBack(){
     window.history.back(); 
 }
-
-
 </script>
 </html>

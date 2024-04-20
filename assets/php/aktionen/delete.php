@@ -6,14 +6,21 @@ if(isset($_POST['delete_id'])){
     $aktion = $_POST['delete_id'];
 
     $sql = "DELETE mta, a
-        FROM material_transportkiste_aktion AS mta
-        INNER JOIN aktionen AS a ON mta.idAktion = a.idAktion
-        WHERE a.idAktion = ?";
+            FROM material_transportkiste_aktion AS mta
+            INNER JOIN aktionen AS a ON mta.idAktion = a.idAktion
+            WHERE a.idAktion = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $aktion);
+    
+    if ($stmt) {
+        $stmt->bind_param("i", $aktion);
+        
+        if($stmt->execute()) {
+            echo "success";
+        } else {
+            echo "error";
+        }
 
-    if($stmt->execute()) {
-        echo "success";
+        $stmt->close();
     } else {
         echo "error";
     }

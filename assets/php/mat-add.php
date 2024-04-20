@@ -1,11 +1,11 @@
 <?php
+//Fügt ein neues Material zur Datenbank hinzu.
 session_start();
 require_once 'config.php';
 
-if (isset($_POST['bezeichnung_input']) && isset($_POST['anzahl_input']) && isset($_POST['lagerort_input']) && 
-    isset($_POST['kategorie_input']) && isset($_POST['verpackung_input']) && 
-    isset($_POST['bemerkung_input'])) {
-
+if (isset($_POST['bezeichnung_input'], $_POST['anzahl_input'], $_POST['lagerort_input'], 
+          $_POST['kategorie_input'], $_POST['verpackung_input'], $_POST['bemerkung_input'])) {
+    
     $bezeichnung = $_POST['bezeichnung_input'];
     $anzahl = (int) $_POST['anzahl_input'];
     $lagerort = $_POST['lagerort_input'];
@@ -17,13 +17,23 @@ if (isset($_POST['bezeichnung_input']) && isset($_POST['anzahl_input']) && isset
     $nutzer = $_SESSION['username'];
 
     $sql = "INSERT INTO material (bezeichnung, anzahl, lagerort, kategorie, verpackung, bemerkung, status, hinzugefuegtAm, hinzugefuegtVon)
-        VALUES ('$bezeichnung', '$anzahl', '$lagerort', '$kategorie', '$verpackung', '$bemerkung', '$status', '$hinzugefuegt', '{$nutzer}')";
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    
+    if ($stmt) {
+        $stmt->bind_param("sissssis", $bezeichnung, $anzahl, $lagerort, $kategorie, $verpackung, $bemerkung, $status, $hinzugefuegt, $nutzer);
+        
+        if ($stmt->execute()) {
+            $id = $stmt->insert_id;
+            header("Location: ../../pages/bestand/ansicht-material.php?id=" . urlencode($id));
+            exit();
+        } else {
+            echo "Error: Ein Fehler ist beim Einfügen der Daten aufgetreten.";
+        }
 
-    if ($conn->query($sql) === TRUE) {
-        $id = $conn->insert_id;
-        header("Location: ../../pages/bestand/ansicht-material.php?id=" . urlencode($id));
+        $stmt->close();
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Error: Ein Fehler ist beim Vorbereiten des SQL-Statements aufgetreten.";
     }
 } else {
     echo "Ein oder mehrere Pflichtfelder sind nicht ausgefüllt.";

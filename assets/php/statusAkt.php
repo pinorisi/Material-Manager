@@ -1,30 +1,30 @@
 <?php
+//Aktualisiert den Status von Materialien - Für Cronjob.
 require_once 'config.php';
 
-$currentDate = date("Y.m.d");
+date_default_timezone_set('Deine_Zeitzone');
 
-$sql = "SELECT idAktion, beginn, ende FROM aktionen WHERE beginn <= '$currentDate' AND ende >= '$currentDate'";
-$result = $conn->query($sql);
-echo $result->num_rows;
+$currentDate = date("Y-m-d");
 
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $aktion_id = $row["idAktion"];
-        
-        $update_sql = "UPDATE material 
-                       INNER JOIN material_transportkiste_aktion 
-                       ON material.idMaterial = material_transportkiste_aktion.idMaterial
-                       SET material.status = 1 
-                       WHERE material_transportkiste_aktion.idAktion = $aktion_id";
-        if ($conn->query($update_sql) === TRUE) {
-            echo "Material erfolgreich aktualisiert fuer Aktion: " . $aktion_id . "\n";
-        } else {
-            echo "Fehler beim Aktualisieren des Materials: " . $conn->error . "\n";
-        }
+$sql = "UPDATE material 
+        INNER JOIN material_transportkiste_aktion 
+        ON material.idMaterial = material_transportkiste_aktion.idMaterial
+        INNER JOIN aktionen 
+        ON material_transportkiste_aktion.idAktion = aktionen.idAktion
+        SET material.status = 1 
+        WHERE aktionen.beginn <= ? AND aktionen.ende >= ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $currentDate, $currentDate);
+if ($stmt->execute()) {
+    if ($stmt->affected_rows > 0) {
+        echo "Materialien erfolgreich aktualisiert für aktive Aktionen.\n";
+    } else {
+        echo "Keine Materialien gefunden für aktive Aktionen.\n";
     }
 } else {
-    echo "Keine aktiven Aktionen gefunden.\n";
+    error_log("Fehler beim Aktualisieren der Materialien: " . $stmt->error);
 }
 
+$stmt->close();
 $conn->close();
 ?>

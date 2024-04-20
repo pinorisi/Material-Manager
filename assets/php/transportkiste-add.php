@@ -1,25 +1,21 @@
 <?php
-//Eine neue Lagerkiste erstellen.
+//Fügt eine Transportkiste der Datenbank hinzu.
 session_start();
 require_once 'config.php';
 
-if (isset($_POST['bezeichnung_input'], $_POST['kistenart_input'], $_POST['lagerort_input'])) {
+if (isset($_POST['bezeichnung_input'], $_POST['kistenart_input'])) {
     $bezeichnung = $_POST['bezeichnung_input'];
     $kistenart = (int) $_POST['kistenart_input'];
-    $lagerort = $_POST['lagerort_input'];
-    $actDate = date("Y-m-d");
-    $user = $_SESSION['username'];
 
-    $sql = "INSERT INTO kisten (bezeichnung, icon, lagerort, hinzugefuegtAm, hinzugefuegtVon)
-        VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO transportkisten (bezeichnung, icon) VALUES (?, ?)";
     $stmt = $conn->prepare($sql);
 
     if ($stmt) {
-        $stmt->bind_param("siiss", $bezeichnung, $kistenart, $lagerort, $actDate, $user);
+        $stmt->bind_param("si", $bezeichnung, $kistenart);
         
         if ($stmt->execute()) {
             $id = $stmt->insert_id;
-            header("Location: ../../pages/lager/kiste-bearbeiten.php?id=" . urlencode($id));
+            header("Location: ../../pages/allgemein/dashboard.php");
             exit();
         } else {
             echo "Error: Ein Fehler ist beim Einfügen der Daten aufgetreten.";
