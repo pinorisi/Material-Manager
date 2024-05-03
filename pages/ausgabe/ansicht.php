@@ -157,20 +157,6 @@ $conn->close();
         </div>
     </div>
 
-    <div class="modal" id="qr-modal">
-		<div class="modal-content">
-			<div class="space-between">
-				<a onclick="closeModal('qr-modal')"><span data-feather="arrow-left"></span></a>
-				<p style="width: 100%; text-align: center;">QR-Code</p>
-			</div>
-			<div id="qrcode"></div>
-			<div class="space-between" style="margin-top: 16px;">
-				<a onClick="closeModal('qr-modal')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
-				<a onclick="downloadCode()" class="footer-button_long" download>Herunterladen</a>
-			</div>
-		</div>
-	</div>
-
     <footer style="grid-template-columns: 2fr 1fr;">
         <a href="uebersicht.php" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
         <a onclick="openModal('modal')" class="footer-button_long light"><span data-feather="info"></span></a>

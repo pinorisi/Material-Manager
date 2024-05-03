@@ -21,7 +21,7 @@ if (isset($_POST['bezeichnung_input'], $_POST['anzahl_input'], $_POST['lagerort_
     $stmt = $conn->prepare($sql);
     
     if ($stmt) {
-        $stmt->bind_param("sissssis", $bezeichnung, $anzahl, $lagerort, $kategorie, $verpackung, $bemerkung, $status, $hinzugefuegt, $nutzer);
+        $stmt->bind_param("sissssiss", $bezeichnung, $anzahl, $lagerort, $kategorie, $verpackung, $bemerkung, $status, $hinzugefuegt, $nutzer);
         
         if ($stmt->execute()) {
             $id = $stmt->insert_id;

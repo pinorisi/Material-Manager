@@ -115,42 +115,6 @@ header{
     margin-top: 4px;
 }
 
-#footer-menu{
-    border: 1px solid #232527;
-    border-radius: 4px;
-    width: auto;
-    padding: 8px 4px;
-    position: absolute;
-    right: -250px;
-    bottom: 58px;
-    margin-bottom: 16px;
-    background-color: white;
-    transition: right 0.1s ease-out;
-}
-
-#footer-menu.open{
-    right: 40px;
-}
-
-#footer-menu ul{
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.menu-link{
-    cursor: pointer;
-    text-decoration: none;
-    text-transform: none;
-    color: #232527;
-    font-size: 1rem;
-}
-
-.menu-link:hover{
-    color: #3B3D40;
-}
-
 #username{
     text-transform: capitalize;
 }
@@ -359,6 +323,10 @@ input[type='checkbox']{
     display: flex;
 }
 
+.modal.open .modal-menu{
+    right: 40px;
+}
+
 .modal-content{
     width: 100%;
     min-height: 125px;
@@ -368,6 +336,40 @@ input[type='checkbox']{
     padding: 8px;
     display: flex;
     flex-direction: column;
+}
+
+.modal-menu{
+    border: none;
+    width: auto;
+    position: absolute;
+    right: -250px;
+    bottom: 58px;
+    margin-bottom: 16px;
+    transition: right 0.1s ease-out;
+}
+
+.modal-menu ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: flex-end;
+}
+
+.menu-link{
+    cursor: pointer;
+    text-decoration: none;
+    text-transform: none;
+    color: #232527;
+    font-size: 1rem;
+    border-radius: 4px;
+    background-color: white;
+    padding: 8px 16px;
+    margin-top: 8px;
+}
+
+.menu-link:hover{
+    color: #3B3D40;
 }
 
 .modal-content .feather{

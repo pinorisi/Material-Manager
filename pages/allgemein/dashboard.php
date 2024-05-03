@@ -141,17 +141,19 @@ $conn->close();
 		</div>
 	</div>
 
-    <div id="footer-menu">
-        <ul>
-            <li><a href="../bestand/erstellen.php" class="menu-link">Material</a></li>
-            <li><a href="../lager/kiste-erstellen.php" class="menu-link">Lagerkiste</a></li>
-            <li><a href="../allgemein/transportkiste-erstellen.php" class="menu-link">Transportkiste</a></li>
-        </ul>
+    <div class="modal" id="add-menu" onclick="closeModal('add-menu')">
+        <div class="modal-menu">
+            <ul>
+                <li><a href="../bestand/erstellen.php" class="menu-link">Material</a></li>
+                <li><a href="../lager/kiste-erstellen.php" class="menu-link">Lagerkiste</a></li>
+                <li><a href="../allgemein/transportkiste-erstellen.php" class="menu-link">Transportkiste</a></li>
+            </ul>
+        </div>
     </div>
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">
         <button onclick="scanCode()" class="footer-button_long"><span data-feather="camera"></span>Scannen</button>
-        <a id="add-Btn" onclick="toggleMenu('footer-menu')" class="footer-button"><span data-feather="plus"></span></a>
+        <a id="add-Btn" onclick="toggleMenu('add-menu')" class="footer-button"><span data-feather="plus"></span></a>
 </form>
     </footer>
 </div>

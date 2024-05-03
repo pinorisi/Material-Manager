@@ -140,8 +140,17 @@ if ($result->num_rows > 0) {
     <footer>
         <a onclick="siteBack()" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
         <a onclick="siteBack()" class="footer-button_long" style="font-size:16px;">Speichern</a>
-        <a onclick="openModal('modalKisten')" class="footer-button"><span data-feather="plus"></span></a>
+        <a onclick="openModal('add-menu')" class="footer-button"><span data-feather="plus"></span></a>
     </footer>
+
+    <div class="modal" id="add-menu" onclick="closeModal('add-menu')">
+        <div class="modal-menu">
+            <ul>
+                <li><a onclick="openModal('modalKisten')" class="menu-link">Transportkiste</a></li>
+                <li><a onclick="openModal('modalLosesMaterial')" class="menu-link">Loses Material</a></li>
+            </ul>
+        </div>
+    </div>
 
     <div class="modal" id="modalKisten">
 		<div class="modal-content">
@@ -226,13 +235,55 @@ if ($result->num_rows > 0) {
                         } else {
                             echo "<li style='height:auto;>Keine verfügbaren Materialien gefunden</li>";
                         }
+                    ?>
+                </ul>
+            </div>
+			<div class="space-between" style="margin-top: 16px;">
+				<a onClick="closeModal('modalMaterial')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
+			</div>
+		</div>
+	</div>
+
+    <div class="modal" id="modalLosesMaterial">
+		<div class="modal-content">
+			<div class="space-between">
+				<a onclick="closeModal('modalLosesMaterial')"><span data-feather="arrow-left"></span></a>
+				<p style="width: 100%; text-align: center;">Loses Material hinzufügen</p>
+			</div>
+            <div>
+                <div class="search-container">
+                    <input type="search" id="search-bar2" placeholder="Suchen..." onkeyup="searchBestand()">
+                    <button type="button"><span data-feather="search"></span></button>
+                    </div>
+                <p class="subname" style="margin-top: 2px; margin-bottom: 16px;" id="resultCount">0 Ergebnisse gefunden</p>
+                <ul class="bestand-list" style="margin-top:0; height:40vh;">
+                    <?php
+                        require_once('../../assets/php/config.php');
+
+                        $sql2 = "SELECT m.bezeichnung, m.idMaterial, m.anzahl 
+                        FROM material m
+                        LEFT JOIN material_transportkiste_aktion mta ON m.idMaterial = mta.idMaterial
+                        WHERE mta.idMaterial IS NULL OR mta.idAktion <> '$id'";
+                        $result2 = $conn->query($sql2);
+                        if ($result2->num_rows > 0) {
+                            while ($row = $result2->fetch_assoc()) {
+                                echo '<li class="space-between blli" id="material_' . $row["idMaterial"] . '">
+                                        <p>' . $row["bezeichnung"] . '</p>
+                                        <div style="display: flex;flex-direction: row;gap: 8px;align-items: center;">
+                                            <p style="text-align: center;">' . $row["anzahl"] . '</p><div class="vertical-line"></div><a class="delMatBtn" style="background-color: #6D8788;" onclick="assignMaterial(\'' . $row["idMaterial"] . '\', \'' . $id . '\')"><span style="margin-top:1px;" data-feather="plus"></span></a>
+                                        </div>
+                                    </li>';
+                            }
+                        } else {
+                            echo "<li style='height:auto;>Keine verfügbaren Materialien gefunden</li>";
+                        }
 
                         $conn->close();
                     ?>
                 </ul>
             </div>
 			<div class="space-between" style="margin-top: 16px;">
-				<a onClick="closeModal('modalMaterial')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
+				<a onClick="closeModal('modalLosesMaterial')" class="footer-button_long dark"><span data-feather="arrow-left"></span>Zurück</a>
 			</div>
 		</div>
 	</div>
