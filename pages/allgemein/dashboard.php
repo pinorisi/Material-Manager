@@ -83,6 +83,11 @@ $conn->close();
         <ul>
             <li><a href="profil.php" class="menu-link">Profil</a></li>
             <li><a class="menu-link">Einstellungen</a></li>
+            <?php
+                if (isset($_SESSION['berechtigung']) && $_SESSION['berechtigung'] == 4) {
+                    echo "<li><a href='../admin/uebersicht.php' class='menu-link'>Admin</a></li>";
+                }
+            ?>
             <li>
                 <form method="post" action="../../assets/php/users/logout.php">
                     <input type="submit" name="logout" value="Logout">

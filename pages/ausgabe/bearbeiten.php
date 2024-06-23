@@ -91,20 +91,27 @@ if ($result->num_rows > 0) {
             <input type="hidden" id="idAktion" name="idAktion" value="<?php echo $id; ?>" />
 
             <h3 style="margin-top: 16px;">Material hinzufügen</h3>
-            <ul class="bestand-list" style="margin-top:0; height:55%;">
+            <ul class="bestand-list" style="margin-top:0; height:250px;">
                 <?php
                     require_once('../../assets/php/config.php');
 
-                    $sql = "SELECT tk.idTransportkiste, tk.bezeichnung AS Transportkiste
-                            FROM transportkisten tk
-                            LEFT JOIN material_transportkiste_aktion mta ON tk.idTransportkiste = mta.idTransportkiste
-                            LEFT JOIN aktionen a ON mta.idAktion = a.idAktion
-                            WHERE a.idAktion = $id
-                            GROUP BY tk.idTransportkiste";
-                    $result = $conn->query($sql);
+                    $transportkiste_sql = "SELECT tk.idTransportkiste, tk.bezeichnung AS Transportkiste
+                                            FROM transportkisten tk
+                                            LEFT JOIN material_transportkiste_aktion mta ON tk.idTransportkiste = mta.idTransportkiste
+                                            LEFT JOIN aktionen a ON mta.idAktion = a.idAktion
+                                            WHERE a.idAktion = $id
+                                            GROUP BY tk.idTransportkiste";
+                    $transportkiste_result = $conn->query($transportkiste_sql);
 
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
+                    $loses_material_sql = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
+                                            FROM material_transportkiste_aktion mta
+                                            JOIN material m ON mta.idMaterial = m.idMaterial
+                                            LEFT JOIN transportkisten tk ON mta.idTransportkiste = tk.idTransportkiste
+                                            WHERE mta.idTransportkiste IS NULL AND mta.idAktion = $id";
+                    $loses_material_result = $conn->query($loses_material_sql);
+
+                    if ($transportkiste_result->num_rows > 0) {
+                        while ($row = $transportkiste_result->fetch_assoc()) {
                             echo "<li style='height:auto; background-color:white;' id='transportkiste_" . $row['idTransportkiste'] . "' class='listDetail'><details>
                                     <summary>
                                         <p style='width:80%'>$row[Transportkiste]</p>
@@ -114,14 +121,13 @@ if ($result->num_rows > 0) {
                                         </div>
                                     </summary>
                                     <ul>";
-                                    $sql2 = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
-                                             FROM material_transportkiste_aktion mta
-                                             JOIN material m ON mta.idMaterial = m.idMaterial
-                                             WHERE mta.idTransportkiste = $row[idTransportkiste] AND mta.idAktion = $id";
-                                    $result2 = $conn->query($sql2);
-                                    if ($result2->num_rows > 0) {
-                                    
-                                        while ($row2 = $result2->fetch_assoc()) {
+                                    $material_in_kiste_sql = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
+                                                             FROM material_transportkiste_aktion mta
+                                                             JOIN material m ON mta.idMaterial = m.idMaterial
+                                                             WHERE mta.idTransportkiste = $row[idTransportkiste] AND mta.idAktion = $id";
+                                    $material_in_kiste_result = $conn->query($material_in_kiste_sql);
+                                    if ($material_in_kiste_result->num_rows > 0) {
+                                        while ($row2 = $material_in_kiste_result->fetch_assoc()) {
                                             echo "<li class='subname space-between' id='materialkiste_" . $row2['MaterialId'] . "' style='padding-right:11px;'><p>$row2[Material]</p><a class='delMatBtn' onclick='unassignMaterial(\"" . $row2['MaterialId'] . "\", \"" . $aktion['idAktion'] . "\")'><span style='margin-top:1px; margin-left:0px;' data-feather='x'></span></a></li>";
                                         }
                                     } else {
@@ -133,8 +139,22 @@ if ($result->num_rows > 0) {
                     } else {
                         echo "<li style='height:auto;'><p class='subtitle'>Der Aktion wurde kein Material zugeordnet</p></li>";
                     }
+                
+                    if ($loses_material_result->num_rows > 0) {
+                        echo "<li style='height:auto; background-color:white;' id='loses_material'><details>
+                                <summary>
+                                    <p style='width:80%'>Loses Material</p>
+                                </summary>
+                                <ul>";
+                        while ($row = $loses_material_result->fetch_assoc()) {
+                            echo "<li class='subname space-between' id='loses_material_" . $row['MaterialId'] . "' style='padding-right:11px;'><p>$row[Material]</p><a class='delMatBtn' onclick='unassignLosesMaterial(\"" . $row['MaterialId'] . "\", \"" . $aktion['idAktion'] . "\")'><span style='margin-top:1px; margin-left:0px;' data-feather='x'></span></a></li>";
+                        }
+                        echo "</ul>
+                              </details></li>";
+                    }
                 ?>
             </ul>
+
     </main>
 
     <footer>
@@ -163,19 +183,19 @@ if ($result->num_rows > 0) {
                     <?php
                         require_once('../../assets/php/config.php');
 
-                        $sql2 = "SELECT * FROM transportkisten 
+                        $sql4 = "SELECT * FROM transportkisten 
                                   WHERE idTransportkiste NOT IN (
                                       SELECT idTransportkiste FROM material_transportkiste_aktion 
                                       WHERE idAktion = ?
                                   )";
-                        $stmt = $conn->prepare($sql2);
+                        $stmt = $conn->prepare($sql4);
                         $stmt->bind_param("i", $id);
                         $id = $aktion["idAktion"];
                         $stmt->execute();
-                        $result2 = $stmt->get_result();
+                        $result4 = $stmt->get_result();
                                 
-                        if ($result2->num_rows > 0) {
-                            while ($row = $result2->fetch_assoc()) {
+                        if ($result4->num_rows > 0) {
+                            while ($row = $result4->fetch_assoc()) {
                                 switch ($row["icon"]) {
                                     case "1":
                                         $chestIcon = "../../assets/icons/full_box.svg";
@@ -270,7 +290,7 @@ if ($result->num_rows > 0) {
                                 echo '<li class="space-between blli" id="material_' . $row["idMaterial"] . '">
                                         <p>' . $row["bezeichnung"] . '</p>
                                         <div style="display: flex;flex-direction: row;gap: 8px;align-items: center;">
-                                            <p style="text-align: center;">' . $row["anzahl"] . '</p><div class="vertical-line"></div><a class="delMatBtn" style="background-color: #6D8788;" onclick="assignMaterial(\'' . $row["idMaterial"] . '\', \'' . $id . '\')"><span style="margin-top:1px;" data-feather="plus"></span></a>
+                                            <p style="text-align: center;">' . $row["anzahl"] . '</p><div class="vertical-line"></div><a class="delMatBtn" style="background-color: #6D8788;" onclick="assignlosesMaterial(\'' . $row["idMaterial"] . '\', \'' . $id . '\')"><span style="margin-top:1px;" data-feather="plus"></span></a>
                                         </div>
                                     </li>';
                             }
@@ -368,7 +388,21 @@ function assignMaterial(idMaterial, idAktion){
             location.reload();
         },
         error: function(xhr, status, error) {
-            console.error('Fehler beim zuweisen des Materials zur Transportkiste der Aktion:', error);
+            console.error('Fehler beim zuweisen des Materials zur Transportkiste der Aktion:');
+        }
+    });
+}
+
+function assignlosesMaterial(idMaterial, idAktion){
+    $.ajax({
+        url: '../../assets/php/aktionen/assign-loses-material.php',
+        type: 'POST',
+        data: { material_id: idMaterial, aktion_id: idAktion},
+        success: function(response) {
+            location.reload();
+        },
+        error: function(xhr, status, error) {
+            console.error('Fehler beim zuweisen des Materials zur Aktion:');
         }
     });
 }
@@ -382,7 +416,7 @@ function assignTransportkiste(idTransportkiste, idAktion){
             location.reload();
         },
         error: function(xhr, status, error) {
-            console.error('Fehler beim zuweisen der Transportkiste zur Aktion:', error);
+            console.error('Fehler beim zuweisen der Transportkiste zur Aktion');
         }
     });
 }
@@ -397,7 +431,7 @@ function unassignTransportkiste(idTransportkiste, idAktion) {
             console.log('Transportkiste ' + idTransportkiste + ' erfolgreich aus Aktion ' + idAktion + ' entfernt.');
         },
         error: function(xhr, status, error) {
-            console.error('Fehler beim entfernen der Transportkiste:', error);
+            console.error('Fehler beim entfernen der Transportkiste');
         }
     });
 }
@@ -412,23 +446,48 @@ function unassignMaterial(idMaterial, idAktion) {
             console.log('Material (' + idMaterial + ') erfolgreich aus Aktion (' + idAktion + ') entfernt.');
         },
         error: function(xhr, status, error) {
-            console.error('Fehler beim entfernen der Transportkiste:', error);
+            console.error('Fehler beim entfernen der Transportkiste:');
         }
     });
 }
 
-function deleteAktion(idAktion){
+function unassignLosesMaterial(idMaterial, idAktion) {
+    $.ajax({
+        url: '../../assets/php/aktionen/unassign-material.php',
+        type: 'POST',
+        data: {material_id: idMaterial, aktion_id: idAktion},
+        success: function(response) {
+            $('#loses_material_' + idMaterial).remove();
+            console.log('Loses Material (' + idMaterial + ') erfolgreich aus Aktion (' + idAktion + ') entfernt.');
+        },
+        error: function(xhr, status, error) {
+            console.error('Fehler beim entfernen der Transportkiste:');
+        }
+    });
+}
+
+function deleteAktion(idAktion) {
     console.log(idAktion);
     $.ajax({
-            url: "../../assets/php/aktionen/delete.php",
-            type: "POST",
-            data: { delete_id: idAktion },
-            success: function() {
-                window.location.href="uebersicht.php"
-                console.log("erfolgreich gelöscht.")
+        url: "../../assets/php/aktionen/delete.php",
+        type: "POST",
+        data: { delete_id: idAktion },
+        success: function(response) {
+            console.log(response); // Ausgabe der Antwort zur Fehlersuche
+            if (response.trim() === "success") {
+                window.location.href = "uebersicht.php";
+                console.log("Erfolgreich gelöscht.");
+            } else {
+                console.log("Fehler: " + response);
             }
-        });
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.log("AJAX Fehler: " + textStatus + " - " + errorThrown);
+        }
+    });
 }
+
+
 
 function delAktion(){
     <?php  ?>

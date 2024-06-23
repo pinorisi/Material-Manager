@@ -86,48 +86,68 @@ if ($result->num_rows > 0) {
             </div>
 
         <h3 style="margin-top: 16px;">Material</h3>
-        <ul class="bestand-list">
+        <ul class="bestand-list" style="height:60%;">
         <?php
-require_once('../../assets/php/config.php');
+            require_once('../../assets/php/config.php');
 
-$sql = "SELECT tk.idTransportkiste, tk.bezeichnung AS Transportkiste
-        FROM transportkisten tk
-        LEFT JOIN material_transportkiste_aktion mta ON tk.idTransportkiste = mta.idTransportkiste
-        LEFT JOIN aktionen a ON mta.idAktion = a.idAktion
-        WHERE a.idAktion = $id
-        GROUP BY tk.idTransportkiste";
-$result = $conn->query($sql);
+            $transportkiste_sql = "SELECT tk.idTransportkiste, tk.bezeichnung AS Transportkiste
+                                   FROM transportkisten tk
+                                   LEFT JOIN material_transportkiste_aktion mta ON tk.idTransportkiste = mta.idTransportkiste
+                                   LEFT JOIN aktionen a ON mta.idAktion = a.idAktion
+                                   WHERE a.idAktion = $id
+                                   GROUP BY tk.idTransportkiste";
+            $transportkiste_result = $conn->query($transportkiste_sql);
 
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo "<li style='height:auto; background-color:white;' class='listDetail'><details>
-                <summary>
-                    <p style='width:80%'>$row[Transportkiste]</p>
-                    <img style='margin-right:8px;align-items:center;' src='../../assets/icons/full_box.svg'/>
-                </summary>
-                <ul>";
-                $sql2 = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
-                         FROM material_transportkiste_aktion mta
-                         JOIN material m ON mta.idMaterial = m.idMaterial
-                         WHERE mta.idTransportkiste = $row[idTransportkiste] AND mta.idAktion = $id";
-                $result2 = $conn->query($sql2);
-                if ($result2->num_rows > 0) {
+            $loses_material_sql = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
+                                   FROM material_transportkiste_aktion mta
+                                   JOIN material m ON mta.idMaterial = m.idMaterial
+                                   LEFT JOIN transportkisten tk ON mta.idTransportkiste = tk.idTransportkiste
+                                   WHERE mta.idTransportkiste IS NULL AND mta.idAktion = $id";
+            $loses_material_result = $conn->query($loses_material_sql);
 
-                    while ($row2 = $result2->fetch_assoc()) {
-                        echo "<li class='subname space-between' style='padding-right:13px;' onclick='toMaterialPage($row2[MaterialId])'><p>$row2[Material]</p><p>$row2[Anzahl]</p></li>";
-                    }
-                } else {
-                    echo "<li class='subname space-between'><p>Kein Material</p></li>";
+            if ($transportkiste_result->num_rows > 0) {
+                while ($row = $transportkiste_result->fetch_assoc()) {
+                    echo "<li style='height:auto; background-color:white;' class='listDetail'><details>
+                            <summary>
+                                <p style='width:80%'>$row[Transportkiste]</p>
+                                <img style='margin-right:8px;align-items:center;' src='../../assets/icons/full_box.svg'/>
+                            </summary>
+                            <ul>";
+                            $material_in_kiste_sql = "SELECT m.bezeichnung AS Material, m.anzahl AS Anzahl, m.idMaterial AS MaterialId
+                                                      FROM material_transportkiste_aktion mta
+                                                      JOIN material m ON mta.idMaterial = m.idMaterial
+                                                      WHERE mta.idTransportkiste = $row[idTransportkiste] AND mta.idAktion = $id";
+                            $material_in_kiste_result = $conn->query($material_in_kiste_sql);
+                            if ($material_in_kiste_result->num_rows > 0) {
+                                while ($row2 = $material_in_kiste_result->fetch_assoc()) {
+                                    echo "<li class='subname space-between' style='padding-right:13px;' onclick='toMaterialPage($row2[MaterialId])'><p>$row2[Material]</p><p>$row2[Anzahl]</p></li>";
+                                }
+                            } else {
+                                echo "<li class='subname space-between'><p>Kein Material</p></li>";
+                            }
+                    echo "</ul>
+                          </details></li>";
                 }
-        echo "</ul>
-              </details></li>";
-    }
-} else {
-    echo "<li style='height:auto;'><p class='subtitle'>Der Aktion wurde kein Material zugeordnet</p></li>";
-}
+            } else {
+                echo "<li style='height:auto;'><p class='subtitle'>Der Aktion wurde kein Material zugeordnet</p></li>";
+            }
 
-$conn->close();
-?>
+            if ($loses_material_result->num_rows > 0) {
+                echo "<li style='height:auto; background-color:white;' class='listDetail'><details>
+                        <summary>
+                            <p style='width:80%'>Loses Material</p>
+                        </summary>
+                        <ul>";
+                while ($row = $loses_material_result->fetch_assoc()) {
+                    echo "<li class='subname space-between' style='padding-right:13px;' onclick='toMaterialPage($row[MaterialId])'><p>$row[Material]</p><p>$row[Anzahl]</p></li>";
+                }
+                echo "</ul>
+                      </details></li>";
+            }
+
+            $conn->close();
+            ?>
+
         </ul>
 
     </main>

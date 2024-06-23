@@ -51,9 +51,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
     <main>
         <h1>Ausgaben</h1>
-        <p style="margin-top:40px;">Aktuelle Ausgaben</p>
+        <p style="margin-top:40px;"><b>Aktuelle Ausgaben</b></p>
         <hr style="margin-top:8px;">
-        <ul class="bestand-list" style="height:78px;">
+        <ul class="bestand-list" style="height:10%;">
             <?php
                 require_once('../../assets/php/config.php');
                 $currentDate = date("Y.m.d");
@@ -104,7 +104,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
         <p style="margin-top:20px;"><b>Historie</b></p>
         <hr style="margin-top:8px;">
-        <ul class="bestand-list" style="height:38%;">
+        <ul class="bestand-list" style="height:38% !important; max-height:160px;">
             <?php
                 require_once('../../assets/php/config.php');
                 $currentDate = date("Y.m.d");

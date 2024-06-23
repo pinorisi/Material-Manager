@@ -4,69 +4,57 @@ session_start();
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header("location: ../login/login.php");
     exit;
+} elseif (isset($_SESSION['berechtigung']) && $_SESSION["berechtigung"] !== 4) {
+    header("location: ../allgemein/dashboard.php");
+    exit;
 } elseif (isset($_SESSION['wartungsmodus']) && $_SESSION["wartungsmodus"] == true) {
     header("location: ../login/logout.html");
     exit;
 }
+
 require_once '../../assets/php/config.php';
 
-$id = $_SESSION['id'];
+if($_SERVER['REQUEST_METHOD'] == "POST") {
+    $vorname = $_POST["vorname_input"];
+    $email = $_POST["email_input"];
+    $berechtigung = $_POST["berechtigung_input"];
+    
+    $registerKey = generateRegisterKey();
+    $sql = "INSERT INTO benutzer (vorname, emailAdresse, rolleId, registrierSchluessel) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssis", $vorname, $email, $berechtigung, $registerKey);
+    $stmt->execute();
 
-$sql = "SELECT * FROM benutzer WHERE idbenutzer = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+    $betreff = "Deine Zugangsdaten zum Material-Manager";
+    $vorlage = file_get_contents("../../assets/mail-templates/registration.html");
 
-if( $result->num_rows > 0) {
-    $users = $result->fetch_assoc();
-} else {
-    echo "Kein Benutzer mit der Id gefunden.";
+    $placeholders = array('%name%', '%registerCode%');
+    $replacements = array($vorname, $registerKey);
+    $inhalt = str_replace($placeholders, $replacements, $vorlage);
+    $empfaenger = $email;
+
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $headers .= "From: Material-Manager <materialmanager@pinorisi.de>" . "\r\n";
+
+    if (mail($empfaenger, $betreff, $inhalt, $headers)) {
+        $error_message = "Nachricht wurde erfolgreich versendet.";
+    } else {
+        $error_message = "Es gab ein Problem beim Versenden Ihrer Nachricht.";
+    }
+
+    $error_message = "Benutzer erfolgreich erstellt!";
 }
 
-if($_SERVER['REQUEST_METHOD'] == "POST"){
-    $username = $_POST["username_input"];
-    $email = $_POST["email_input"];
-    $old_password = $_POST["old_password_input"];
-    $new_password = $_POST["new_password_input"];
-    $new_confirm = $_POST["confirm_new_password_input"];
 
-    // Überprüfen, ob sich der Benutzername geändert hat
-    if (!empty($username) && $username !== $users['benutzername']) {
-        $username = filter_var($username, FILTER_SANITIZE_STRING);
-        $sql = "UPDATE benutzer SET benutzername = ? WHERE idbenutzer = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $username, $id);
-        $stmt->execute();
+function generateRegisterKey() {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $registerKey = '';
+    $length = 8;
+    for ($i = 0; $i < $length; $i++) {
+        $registerKey .= $characters[rand(0, strlen($characters) - 1)];
     }
-
-    // Überprüfen, ob sich die E-Mail-Adresse geändert hat
-    if (!empty($email) && $email !== $users['emailAdresse']) {
-        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
-        $sql = "UPDATE benutzer SET emailAdresse = ? WHERE idbenutzer = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ss", $email, $id);
-        $stmt->execute();
-    }
-
-    if(password_verify($old_password, $users['passwort'])){
-        if (!empty($new_password) && $new_password === $new_confirm) {
-            $new_password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-
-            $sql = "UPDATE benutzer SET passwort = ? WHERE idbenutzer = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ss", $new_password_hash, $id);
-            $stmt->execute();
-
-            $_SESSION['benutzername'] = $username;
-
-            echo "<scrip>document.getElementById('modal').classlist.add('open');</scrip>";
-        } else {
-            echo 'Die neuen Passwörter stimmen nicht überein.';
-        }
-    } else{
-        echo 'Das alte Passwort ist falsch.';
-    }
+    return $registerKey;
 }
 ?>
 
@@ -88,7 +76,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 <body>
 <div class="wrapper">
     <header>
-        <a href="dashboard.php"><img id="logo" src="../../assets/icons/logo-small.png"></a>
+        <a href="../allgemein/dashboard.php"><img id="logo" src="../../assets/icons/logo-small.png"></a>
         <div id="user-header" title="Account">
             <p id="username"><?php echo $_SESSION['username'] ?></p>
             <a onclick="toggleMenu()"><img id="user-image" src="../../assets/images/placeholders/Portrait_Placeholder.png"></a>
@@ -108,24 +96,28 @@ if($_SERVER['REQUEST_METHOD'] == "POST"){
 
     <main>
         <h1>Nutzer erstellen</h1>
-        <form class="infoHolder" method="post" action="#">
+        <form class="infoHolder" method="post">
             <div class="disp-text">
                 <input type="text" id="vorname_input" name="vorname_input" class="text-container" autocomplete="off" required/>
                 <p class="subname">Vorname</p>
             </div>
             <div class="disp-text">
-                <input type="text" id="vorname_input" name="vorname_input" class="text-container" autocomplete="off" required/>
+                <input type="text" id="email_input" name="email_input" class="text-container" autocomplete="off" required/>
                 <p class="subname">E-Mail-Adresse</p>
             </div>
             <div class="grid-2">
                 <div class="disp-text">
-                    <input type="number" id="anzahl_input" name="anzahl_input" min="1" max="4" class="text-container" style="text-decoration: none; color: #232527;" autocomplete="off" required/>
+                    <input type="number" id="berechtigung_input" name="berechtigung_input" min="1" max="4" class="text-container" style="text-decoration: none; color: #232527;" autocomplete="off" required/>
                     <p class="subname">Berechtigung</p>
                 </div>
                 <div class="disp-text">
                 </div>
             </div>
-            <p class="subname">Dem neuen Nutzer wird eine Mail mit einem Registrierungsschlüssel zugesendet.</p>
+                <?php if (isset($error_message)): ?>
+                    <p class="errorMessage"><?php echo $error_message; ?></p>
+                <?php endif; ?>
+            <p class="subname">Dem neuen Nutzer wird eine Mail mit einem Registrierungsschl&uuml;ssel zugesendet.</p>
+            <?php  ?>
     </main>
 
     <footer style="grid-template-columns: 1.5fr 1fr 2fr;">

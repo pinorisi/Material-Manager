@@ -18,16 +18,18 @@ if (isset($_POST['submit'])) {
   if ($result->num_rows == 0) {
       $error_message = "Ungültiger Registrierungsschlüssel.";
   } else {
-    $stmt = $conn->prepare("SELECT * FROM benutzer WHERE benutzername = ? OR emailAdresse = ?");
-    $stmt->bind_param("ss", $username, $email);
+    $stmt = $conn->prepare("SELECT * FROM benutzer WHERE benutzername = ?");
+    $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-      $error_message = "Nutzername oder E-Mail existieren bereits.";
+      $error_message = "Nutzername existiert bereits.";
     } else {
+      // Hashen des Passworts
       $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+      // Überschreibe die E-Mail-Adresse und das gehashte Passwort im Benutzerdatensatz
       $stmt = $conn->prepare("UPDATE benutzer SET benutzername = ?, emailAdresse = ?, passwort = ? WHERE registrierSchluessel = ?");
       $stmt->bind_param("ssss", $username, $email, $hashed_password, $registerKey);
 
@@ -44,6 +46,7 @@ if (isset($_POST['submit'])) {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="de">

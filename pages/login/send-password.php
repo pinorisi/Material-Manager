@@ -19,23 +19,43 @@ if (isset($_POST['submit'])) {
     if ($result->num_rows == 0) {
         $error_message = "Keinen Account mit dieser Email-Adresse gefunden.";
     } else {
-      $resetKey = bin2hex(random_bytes(8));
+        $benutzer = $result->fetch_assoc();
+        $name = $benutzer['vorname'];
+        $resetKey = $benutzer['resetSchluessel'];
 
-      $stmt = $conn->prepare("UPDATE benutzer SET resetSchluessel = ? WHERE emailAdresse = ?");
-      $stmt->bind_param("ss", $resetKey, $nameOrEmail);
-      $stmt->execute();
+        if (empty($resetKey)) {
+            $resetKey = bin2hex(random_bytes(8));
 
-      $to = $_POST['nameOrEmail'];
-      $subject = "Passwort zurücksetzen";
-      $message = "Click the following link to reset your password: <br><br>http://localhost/materialManager/pages/login/reset-password.php?key=$resetKey&email=$to";
-      $headers = "From: materialmanager@pinorisi.de" . "\r\n" .
-        "Reply-To: materialmanager@pinorisi.de" . "\r\n" .
-        "X-Mailer: PHP/" . phpversion();
-      mail($to, $subject, $message, $headers);
-    
-      $error_message = "Ein Link zum zurücksetzen deines Passwortes wurde an deine Email gesendet.";
+            $stmt = $conn->prepare("UPDATE benutzer SET resetSchluessel = ? WHERE emailAdresse = ?");
+            $stmt->bind_param("ss", $resetKey, $nameOrEmail);
+            $stmt->execute();
+        }
+
+        $betreff = "Link zum Zurücksetzen deines Passworts.";
+        $vorlage = file_get_contents("../../assets/mail-templates/link.html");
+
+
+        $resetlink = 'https://pinorisi.de/pages/login/reset-password.php?key=' . urlencode($resetKey) . '&email=' . urlencode($nameOrEmail);
+
+        $placeholders = array('%name%', '%resetlink%');
+        $replacements = array(htmlspecialchars($name, ENT_QUOTES, 'UTF-8'), htmlspecialchars($resetlink, ENT_QUOTES, 'UTF-8'));
+        $inhalt = str_replace($placeholders, $replacements, $vorlage);
+
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $headers .= "From: Material-Manager <materialmanager@pinorisi.de>" . "\r\n";
+        
+        $empfaenger = $nameOrEmail;
+
+        if (mail($empfaenger, $betreff, $inhalt, $headers)) {
+            $error_message = "Ein Link zum Zurücksetzen deines Passwortes wurde an deine E-Mail gesendet.";
+        } else {
+            $error_message = "Es ist ein Fehler aufgetreten.";
+        }
     }
 }
+
+
 
 $conn->close();
 ?>
@@ -71,7 +91,7 @@ $conn->close();
                         <p class="errorMessage"><?php echo $error_message; ?></p>
                     <?php endif; ?>
                     <input type="text" id="nameOrEmail" name="nameOrEmail" required autocomplete="off" autofocus>
-                    <p>Benutzername oder E-Mail</p>
+                    <p>E-Mail des Accounts</p>
                 </div>
                 <button type="submit" id="submit" name="submit" value="Anmelden">Senden</button>
             </form>

@@ -12,7 +12,7 @@ if (isset($_POST['submit'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
-    $sql = "SELECT idbenutzer, benutzername, passwort, letzterLogin FROM benutzer WHERE benutzername = ?";
+    $sql = "SELECT idbenutzer, benutzername, passwort, letzterLogin, rolleId FROM benutzer WHERE benutzername = ?";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $username);
@@ -25,11 +25,13 @@ if (isset($_POST['submit'])) {
             $db_username = $row['benutzername'];
             $db_password = $row['passwort'];
             $last_login = $row['letzterLogin'];
+            $berechtigung = $row['rolleId'];
 
             if (password_verify($password, $db_password)) {
                 $_SESSION['loggedin'] = true;
                 $_SESSION['id'] = $id;
                 $_SESSION['username'] = $username;
+                $_SESSION['berechtigung'] = $berechtigung;
 
                 $current_time = date("Y-m-d H:i:s");
                 $sql_update = "UPDATE benutzer SET letzterLogin = ? WHERE idbenutzer = ?";
